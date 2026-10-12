@@ -1,0 +1,49 @@
+---
+import SectionHeading from './SectionHeading.astro';
+
+const rows: [string, string | boolean, string | boolean][] = [
+  ['Free and paid matches, labelled', true, false],
+  ['One-tap “Free only” filter', true, false],
+  ['Crop to the exact text', true, false],
+  ['Preview matches in your own text', true, false],
+  ['Free lookalikes for paid fonts', true, 'Sometimes'],
+  ['License summary on every result', true, false],
+  ['Direct download / buy links', true, false],
+  ['Free scans per day', '10', '~3'],
+  ['Images stored on servers', 'Never', 'Varies']
+];
+---
+
+<section class="container-page py-20 sm:py-24" aria-labelledby="compare-title">
+  <SectionHeading id="compare-title" eyebrow="Compare" title="More than a name guess" description="How Font Finder Tool stacks up against typical image font detectors." />
+
+  <div class="card mt-10 overflow-x-auto">
+    <table class="w-full min-w-[520px] text-left text-sm">
+      <thead class="border-b border-hairline bg-canvas text-xs text-mute">
+        <tr>
+          <th scope="col" class="px-5 py-3 font-medium">Feature</th>
+          <th scope="col" class="px-5 py-3 font-medium text-ink">Font Finder Tool</th>
+          <th scope="col" class="px-5 py-3 font-medium">Typical detectors</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-hairline">
+        {rows.map(([label, ours, theirs]) => (
+          <tr>
+            <th scope="row" class="px-5 py-3.5 font-normal text-body">{label}</th>
+            {[ours, theirs].map((v, i) => (
+              <td class:list={['px-5 py-3.5', i === 0 ? 'font-medium text-ink' : 'text-mute']}>
+                {v === true ? (
+                  <span class="inline-flex items-center gap-1.5"><svg class="size-4 text-link" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m3.5 8.5 3 3 6-7" stroke-linecap="round" stroke-linejoin="round" /></svg><span class="sr-only">Yes</span></span>
+                ) : v === false ? (
+                  <span class="inline-flex items-center"><svg class="size-4 text-faint" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4.5 8h7" stroke-linecap="round" /></svg><span class="sr-only">No</span></span>
+                ) : (
+                  v
+                )}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</section>

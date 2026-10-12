@@ -1,0 +1,87 @@
+---
+import SectionHeading from './SectionHeading.astro';
+
+const features = [
+  {
+    title: 'Free-only filter',
+    body: 'Every match is tagged Free or Paid. One tap hides commercial fonts so you only see what you can use today.',
+    demo: 'filter'
+  },
+  {
+    title: 'Live preview in your text',
+    body: 'Candidates render your words in the actual font, so you compare letterforms instead of guessing from a name.',
+    demo: 'preview'
+  },
+  {
+    title: 'Free lookalikes for paid fonts',
+    body: 'Found Helvetica or Gotham? We list close free alternatives like Inter and Montserrat right on the card.',
+    demo: 'alts'
+  },
+  {
+    title: 'License at a glance',
+    body: 'See whether a font is OFL, Apache or commercial before you download — no digging through foundry pages.',
+    demo: 'license'
+  },
+  {
+    title: 'Crop before you scan',
+    body: 'Select the exact line you care about. Busy photos and multi-font posters stop confusing the matcher.',
+    demo: 'crop'
+  },
+  {
+    title: 'Private by default',
+    body: 'Images are processed in memory and never stored. Your recent scans stay in your own browser.',
+    demo: 'private'
+  }
+];
+---
+
+<section class="container-page py-20 sm:py-24" aria-labelledby="features-title">
+  <SectionHeading
+    id="features-title"
+    eyebrow="Why Font Finder Tool"
+    title="Built for people who need to actually use the font"
+    description="Most font identifiers stop at a name. We take you all the way to a font you can legally use — free when possible."
+  />
+
+  <ul class="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    {features.map((f) => (
+      <li class="card flex flex-col p-6 shadow-whisper">
+        <div class="mb-6 flex h-24 items-center justify-center rounded-sm border border-hairline-soft bg-canvas" aria-hidden="true">
+          {f.demo === 'filter' && (
+            <span class="inline-flex rounded-pill border border-hairline bg-elevated p-1 text-xs font-medium">
+              <span class="rounded-pill px-3 py-1 text-body">All</span>
+              <span class="rounded-pill bg-ink px-3 py-1 text-white">Free</span>
+              <span class="rounded-pill px-3 py-1 text-body">Paid</span>
+            </span>
+          )}
+          {f.demo === 'preview' && <span class="font-serif text-3xl tracking-tight text-ink italic">Hello there</span>}
+          {f.demo === 'alts' && (
+            <span class="flex flex-wrap justify-center gap-1.5 text-xs">
+              <span class="rounded-pill bg-warning-soft px-2.5 py-1 font-medium text-warning-deep">Gotham</span>
+              <span class="text-mute">→</span>
+              <span class="rounded-pill border border-hairline bg-elevated px-2.5 py-1 text-ink">Montserrat</span>
+            </span>
+          )}
+          {f.demo === 'license' && (
+            <span class="flex gap-1.5 text-xs font-medium">
+              <span class="rounded-pill bg-link-soft px-2.5 py-1 text-link-deep">OFL · commercial OK</span>
+            </span>
+          )}
+          {f.demo === 'crop' && (
+            <span class="relative px-3 py-1 font-mono text-lg text-ink">
+              <span class="absolute inset-0 border-2 border-link bg-link/10"></span>
+              Aa Bb Cc
+            </span>
+          )}
+          {f.demo === 'private' && (
+            <svg class="size-8 text-ink" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="5" y="10.5" width="14" height="10" rx="2" /><path d="M8.5 10.5V7.5a3.5 3.5 0 0 1 7 0v3" />
+            </svg>
+          )}
+        </div>
+        <h3 class="text-heading-md">{f.title}</h3>
+        <p class="mt-2 text-sm leading-6 text-body">{f.body}</p>
+      </li>
+    ))}
+  </ul>
+</section>

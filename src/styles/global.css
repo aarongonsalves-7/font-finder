@@ -1,0 +1,113 @@
+@import "tailwindcss";
+
+/* Skill docs and design notes contain example class names; don't generate CSS for them. */
+@source not "../../.agents";
+@source not "../../DESIGN.md";
+@source not "../../AGENTS.md";
+@source not "../../CLAUDE.md";
+
+/* Design tokens from DESIGN.md (Geist system: ink on near-white, hairline cards). */
+@theme {
+  --color-ink: #171717;
+  --color-body: #4d4d4d;
+  --color-mute: #8f8f8f;
+  --color-faint: #a1a1a1;
+  --color-hairline: #ebebeb;
+  --color-hairline-soft: #f2f2f2;
+  --color-canvas: #fafafa;
+  --color-elevated: #ffffff;
+  --color-link: #0070f3;
+  --color-link-deep: #0761d1;
+  --color-link-soft: #d3e5ff;
+  --color-error: #ee0000;
+  --color-error-deep: #c50000;
+  --color-warning: #f5a623;
+  --color-warning-soft: #ffefcf;
+  --color-warning-deep: #ab570a;
+  --color-violet: #7928ca;
+  --color-cyan: #50e3c2;
+  --color-pink: #ff0080;
+  --color-amber: #f9cb28;
+
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-pill: 100px;
+
+  --text-display: 3rem;
+  --text-display--line-height: 1;
+  --text-display--letter-spacing: -0.05em;
+  --text-display--font-weight: 600;
+  --text-heading-lg: 2rem;
+  --text-heading-lg--line-height: 1.25;
+  --text-heading-lg--letter-spacing: -0.04em;
+  --text-heading-lg--font-weight: 600;
+  --text-heading-md: 1.25rem;
+  --text-heading-md--line-height: 1.4;
+  --text-heading-md--letter-spacing: -0.02em;
+  --text-heading-md--font-weight: 600;
+  --text-eyebrow: 0.75rem;
+  --text-eyebrow--line-height: 1.333;
+  --text-eyebrow--font-weight: 500;
+
+  --shadow-whisper: 0 1px 1px rgb(0 0 0 / 0.04);
+  --shadow-floating: 0 2px 2px rgb(0 0 0 / 0.04), 0 8px 16px -4px rgb(0 0 0 / 0.08), 0 0 0 1px rgb(0 0 0 / 0.04);
+}
+
+@theme inline {
+  --font-sans: var(--font-geist);
+  --font-mono: var(--font-geist-mono);
+}
+
+@layer base {
+  html {
+    @apply bg-canvas text-body antialiased;
+    scroll-padding-top: 5rem;
+  }
+  h1, h2, h3, h4 {
+    @apply text-ink text-balance;
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-link;
+  }
+}
+
+/* Container with the 16px mobile gutter and ~1200px max width. */
+@utility container-page {
+  @apply mx-auto w-full max-w-[1200px] px-4 sm:px-6;
+}
+
+@layer components {
+  /* Marketing CTA pills */
+  .btn-pill {
+    @apply inline-flex h-11 items-center justify-center gap-2 rounded-pill px-5 text-base font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  /* App / nav controls: 6px squares */
+  .btn-square {
+    @apply inline-flex h-9 items-center justify-center gap-1.5 rounded-sm px-3 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-primary {
+    @apply bg-ink text-white hover:bg-ink/85;
+  }
+  .btn-ghost {
+    @apply border border-hairline bg-elevated text-ink hover:bg-hairline-soft;
+  }
+
+  .card {
+    @apply rounded-md border border-hairline bg-elevated;
+  }
+
+  .eyebrow {
+    @apply font-mono text-eyebrow uppercase tracking-wider text-mute;
+  }
+
+  /* Long-form copy on legal and guide pages (markup authored in .astro files). */
+  .rich-text {
+    @apply text-base leading-7 text-body;
+    & h2 { @apply mt-10 mb-3 text-heading-md; }
+    & p, & ul { @apply mb-4; }
+    & ul { @apply list-disc pl-5; }
+    & a { @apply text-link underline-offset-2 hover:underline; }
+    & strong { @apply font-medium text-ink; }
+  }
+}

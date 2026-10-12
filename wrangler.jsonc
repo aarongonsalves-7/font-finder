@@ -1,0 +1,21 @@
+{
+	"$schema": "./node_modules/wrangler/config-schema.json",
+	"compatibility_date": "2026-10-06",
+	"compatibility_flags": ["global_fetch_strictly_public"],
+	"name": "fontfindertool",
+	"main": "@astrojs/cloudflare/entrypoints/server",
+	"assets": {
+		"directory": "./dist",
+		"binding": "ASSETS"
+	},
+	// Daily scan counters (per visitor IP and for the WhatFontIs key quota).
+	// Wrangler provisions the namespace on first deploy.
+	"kv_namespaces": [
+		{
+			"binding": "RATE_KV"
+		}
+	],
+	"observability": {
+		"enabled": true
+	}
+}

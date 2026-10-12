@@ -1,0 +1,5 @@
+# Copy to .dev.vars for local development (never commit .dev.vars).
+# Free key: https://www.whatfontis.com/API-identify-fonts-from-image.html
+WHATFONTIS_API_KEY=
+# Free key: https://aistudio.google.com/apikey
+GEMINI_API_KEY=

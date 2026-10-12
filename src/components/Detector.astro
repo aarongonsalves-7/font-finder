@@ -1,0 +1,142 @@
+---
+interface Props {
+  /** Preselected results filter, e.g. "free" on the free-font landing page. */
+  defaultFilter?: 'all' | 'free' | 'paid';
+}
+
+const { defaultFilter = 'all' } = Astro.props;
+---
+
+<div id="detector" data-detector data-default-filter={defaultFilter} class="scroll-mt-24">
+  <div class="card overflow-hidden text-left shadow-floating">
+    <!-- 1. Upload -->
+    <div data-view="upload" class="p-3 sm:p-4">
+      <label
+        data-dropzone
+        for="ff-file"
+        class="group flex min-h-72 cursor-pointer flex-col items-center justify-center gap-4 rounded-md border border-dashed border-hairline bg-canvas px-6 py-12 text-center transition-colors hover:border-faint focus-within:border-link data-[drag=true]:border-link data-[drag=true]:bg-link-soft/40"
+      >
+        <span class="grid size-12 place-items-center rounded-full border border-hairline bg-elevated text-ink shadow-whisper" aria-hidden="true">
+          <svg class="size-5" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M10 13V3m0 0L6 7m4-4 4 4M3 13v2.5A1.5 1.5 0 0 0 4.5 17h11a1.5 1.5 0 0 0 1.5-1.5V13" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </span>
+        <span>
+          <span class="block text-base font-medium text-ink">Drop an image, paste it, or <span class="text-link group-hover:underline">browse</span></span>
+          <span class="mt-1 block text-sm text-mute">Screenshots, logos, posters, photos · PNG, JPG or WebP</span>
+        </span>
+        <span class="flex flex-wrap items-center justify-center gap-2 text-xs text-mute">
+          <kbd class="rounded-sm border border-hairline bg-elevated px-1.5 py-0.5 font-mono">Ctrl</kbd>+<kbd class="rounded-sm border border-hairline bg-elevated px-1.5 py-0.5 font-mono">V</kbd>
+          <span>to paste from clipboard</span>
+        </span>
+        <input id="ff-file" data-file type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/bmp" class="sr-only" />
+      </label>
+    </div>
+
+    <!-- 2. Crop -->
+    <div data-view="crop" hidden>
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-hairline px-4 py-3 sm:px-5">
+        <p class="text-sm text-body"><strong class="font-medium text-ink">Drag over the text</strong> you want to identify — one line works best.</p>
+        <button type="button" data-clear-crop class="btn-square btn-ghost invisible h-8 text-xs">Use whole image</button>
+      </div>
+      <div class="bg-[repeating-conic-gradient(var(--color-hairline-soft)_0_25%,var(--color-elevated)_0_50%)] bg-size-[16px_16px] p-4 sm:p-6">
+        <div data-crop-area class="relative mx-auto w-fit max-w-full overflow-hidden cursor-crosshair touch-none select-none">
+          <img data-crop-img alt="Your uploaded image" class="block max-h-[420px] max-w-full" draggable="false" />
+          <div data-crop-box class="pointer-events-none absolute border-2 border-link bg-link/10 shadow-[0_0_0_9999px_rgb(0_0_0/0.35)]" hidden></div>
+        </div>
+      </div>
+      <div class="flex flex-col-reverse gap-2 border-t border-hairline px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+        <button type="button" data-reset class="btn-square btn-ghost">Choose another image</button>
+        <button type="button" data-scan class="btn-pill btn-primary">
+          Identify font
+          <svg class="size-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 8h10m0 0L9 4m4 4-4 4" stroke-linecap="round" stroke-linejoin="round" /></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- 3. Loading -->
+    <div data-view="loading" class="flex min-h-72 flex-col items-center justify-center gap-4 px-6 py-12 text-center" hidden>
+      <span class="size-8 animate-spin rounded-full border-2 border-hairline border-t-ink" aria-hidden="true"></span>
+      <p data-loading-text class="text-sm text-body" role="status" aria-live="polite">Reading the letters…</p>
+    </div>
+
+    <!-- 4. Results -->
+    <div data-view="results" hidden>
+      <div class="flex flex-col gap-4 border-b border-hairline px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+        <div class="flex items-center gap-3">
+          <img data-result-thumb alt="Scanned image" class="h-12 w-20 shrink-0 rounded-sm border border-hairline bg-canvas object-contain" />
+          <div>
+            <h2 data-result-title tabindex="-1" class="text-heading-md outline-none">Matches</h2>
+            <p data-result-meta class="text-xs text-mute"></p>
+          </div>
+        </div>
+        <div class="flex gap-2">
+          <button type="button" data-copy-all class="btn-square btn-ghost">Copy list</button>
+          <button type="button" data-reset class="btn-square btn-primary">New scan</button>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-3 border-b border-hairline bg-canvas px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+        <div role="radiogroup" aria-label="Filter results" class="inline-flex w-full rounded-pill border border-hairline bg-elevated p-1 sm:w-auto">
+          <button type="button" role="radio" data-filter="all" class="flex-1 rounded-pill px-4 py-1.5 text-sm font-medium text-body transition-colors aria-checked:bg-ink aria-checked:text-white sm:flex-none">All <span data-count="all" class="tabular-nums opacity-60"></span></button>
+          <button type="button" role="radio" data-filter="free" class="flex-1 rounded-pill px-4 py-1.5 text-sm font-medium text-body transition-colors aria-checked:bg-ink aria-checked:text-white sm:flex-none">Free <span data-count="free" class="tabular-nums opacity-60"></span></button>
+          <button type="button" role="radio" data-filter="paid" class="flex-1 rounded-pill px-4 py-1.5 text-sm font-medium text-body transition-colors aria-checked:bg-ink aria-checked:text-white sm:flex-none">Paid <span data-count="paid" class="tabular-nums opacity-60"></span></button>
+        </div>
+        <label class="flex items-center gap-2 text-sm text-mute">
+          <span class="shrink-0">Preview text</span>
+          <input data-preview-input type="text" maxlength="60" class="h-9 w-full min-w-0 rounded-sm border border-hairline bg-elevated px-3 text-sm text-ink placeholder:text-faint sm:w-64" placeholder="Type to preview" />
+        </label>
+      </div>
+
+      <ul data-results class="grid gap-3 p-3 sm:grid-cols-2 sm:p-4" aria-live="polite"></ul>
+      <p data-empty class="px-5 pb-8 pt-4 text-center text-sm text-mute" hidden></p>
+      <p data-attribution class="border-t border-hairline px-5 py-3 text-xs text-mute" hidden></p>
+    </div>
+
+    <div data-error role="alert" class="mx-3 mb-3 rounded-sm border border-error/30 bg-error/5 px-4 py-3 text-sm text-error-deep sm:mx-4 sm:mb-4" hidden></div>
+  </div>
+
+  <!-- Recent scans (stored only in this browser) -->
+  <div data-history class="mt-6" hidden>
+    <div class="flex items-center justify-between">
+      <h2 class="eyebrow">Recent scans</h2>
+      <button type="button" data-history-clear class="text-xs text-mute hover:text-ink">Clear</button>
+    </div>
+    <ul data-history-list class="mt-3 flex gap-2 overflow-x-auto pb-2"></ul>
+  </div>
+
+  <template data-card-template>
+    <li class="card flex flex-col gap-4 p-4 transition-shadow hover:shadow-floating sm:p-5">
+      <div class="flex items-start justify-between gap-3">
+        <div class="min-w-0">
+          <p class="font-mono text-xs text-mute" data-rank></p>
+          <h3 class="mt-0.5 truncate text-heading-md" data-name></h3>
+          <p class="mt-0.5 text-xs text-mute" data-meta></p>
+        </div>
+        <span data-badge class="shrink-0 rounded-pill px-2.5 py-1 text-xs font-medium"></span>
+      </div>
+
+      <div class="flex min-h-24 items-center overflow-hidden rounded-sm border border-hairline-soft bg-canvas px-4 py-3">
+        <p data-preview class="w-full break-words text-3xl leading-tight text-ink transition-opacity"></p>
+        <img data-sample alt="" class="max-h-20 w-full object-contain object-left" loading="lazy" hidden />
+      </div>
+
+      <p data-license class="text-xs text-body"></p>
+
+      <div data-alts hidden>
+        <p class="eyebrow">Free lookalikes</p>
+        <ul data-alts-list class="mt-2 flex flex-wrap gap-2"></ul>
+      </div>
+
+      <div class="mt-auto flex gap-2">
+        <a data-link class="btn-square btn-primary flex-1" target="_blank" rel="noopener"></a>
+        <button type="button" data-copy class="btn-square btn-ghost">Copy name</button>
+      </div>
+    </li>
+  </template>
+</div>
+
+<script>
+  import { initDetector } from '../scripts/detector';
+  document.querySelectorAll<HTMLElement>('[data-detector]').forEach(initDetector);
+</script>

@@ -1,0 +1,39 @@
+---
+import type { GetStaticPaths } from 'astro';
+import Layout from '../layouts/Layout.astro';
+import PageHero from '../components/PageHero.astro';
+import HowItWorks from '../components/HowItWorks.astro';
+import Faq from '../components/Faq.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { landingPages, type LandingPage } from '../data/landing';
+import { breadcrumbSchema, faqSchema, webAppSchema } from '../lib/schema';
+
+export const getStaticPaths = (() =>
+  landingPages.map((page) => ({ params: { slug: page.slug }, props: { page } }))) satisfies GetStaticPaths;
+
+const { page } = Astro.props as { page: LandingPage };
+const path = `/${page.slug}`;
+---
+
+<Layout
+  title={page.metaTitle}
+  description={page.metaDescription}
+  schema={[webAppSchema(`https://fontfindertool.com${path}`), faqSchema(page.faq), breadcrumbSchema(page.breadcrumb, path)]}
+>
+  <PageHero eyebrow={page.eyebrow} title={page.h1} description={page.intro} defaultFilter={page.defaultFilter} />
+
+  <section class="container-page py-12 sm:py-16">
+    <div class="grid gap-3 md:grid-cols-2">
+      {page.sections.map((s) => (
+        <article class="card p-6 sm:p-8">
+          <h2 class="text-heading-md">{s.heading}</h2>
+          {s.body.map((p) => <p class="mt-3 text-sm leading-6 text-body">{p}</p>)}
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <HowItWorks />
+  <Faq items={page.faq} title={`${page.breadcrumb}: common questions`} />
+  <CtaBand />
+</Layout>

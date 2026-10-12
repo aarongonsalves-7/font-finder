@@ -1,0 +1,40 @@
+---
+import Logo from './Logo.astro';
+import { footerNav } from '../data/nav';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="mt-24 border-t border-hairline bg-canvas">
+  <div class="container-page grid gap-10 py-16 sm:grid-cols-2 lg:grid-cols-[1.5fr_repeat(3,1fr)]">
+    <div class="max-w-xs">
+      <Logo />
+      <p class="mt-4 text-sm leading-6 text-body">
+        Identify fonts from any image and get free and paid matches, side by side.
+      </p>
+    </div>
+
+    {footerNav.map((group) => (
+      <nav aria-label={group.title}>
+        <h2 class="eyebrow">{group.title}</h2>
+        <ul class="mt-4 space-y-2.5 text-sm">
+          {group.links.map((link) => (
+            <li><a href={link.href} class="text-body hover:text-ink">{link.label}</a></li>
+          ))}
+        </ul>
+      </nav>
+    ))}
+  </div>
+
+  <div class="border-t border-hairline">
+    <div class="container-page flex flex-col gap-2 py-6 text-xs text-mute sm:flex-row sm:items-center sm:justify-between">
+      <p>© {year} Font Finder Tool · fontfindertool.com</p>
+      <p>
+        Font recognition powered by{' '}
+        <a href="https://www.whatfontis.com" rel="noopener" class="underline-offset-2 hover:text-ink hover:underline">WhatFontIs</a>{' '}
+        and Google Gemini. Free font data from{' '}
+        <a href="https://fontsource.org" rel="noopener" class="underline-offset-2 hover:text-ink hover:underline">Fontsource</a>.
+      </p>
+    </div>
+  </div>
+</footer>

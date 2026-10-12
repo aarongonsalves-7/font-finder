@@ -1,0 +1,40 @@
+---
+import Detector from './Detector.astro';
+
+interface Props {
+  eyebrow: string;
+  title: string;
+  description: string;
+  defaultFilter?: 'all' | 'free' | 'paid';
+}
+
+const { eyebrow, title, description, defaultFilter } = Astro.props;
+---
+
+<section class="relative isolate overflow-hidden">
+  <!-- Mesh gradient: the only decorative color on the page (DESIGN.md). -->
+  <div class="pointer-events-none absolute inset-x-0 -top-40 -z-10 h-[640px] opacity-60 blur-3xl" aria-hidden="true">
+    <div class="absolute top-24 left-[8%] size-[380px] rounded-full bg-cyan/50"></div>
+    <div class="absolute top-10 left-[32%] size-[420px] rounded-full bg-link/30"></div>
+    <div class="absolute top-28 right-[24%] size-[380px] rounded-full bg-violet/30"></div>
+    <div class="absolute top-6 right-[6%] size-[340px] rounded-full bg-pink/25"></div>
+    <div class="absolute top-64 right-[38%] size-[300px] rounded-full bg-amber/30"></div>
+  </div>
+  <div class="pointer-events-none absolute inset-x-0 top-[420px] -z-10 h-64 bg-linear-to-b from-transparent to-canvas" aria-hidden="true"></div>
+
+  <div class="container-page pt-14 pb-16 text-center sm:pt-24 sm:pb-24">
+    <p class="eyebrow text-body">{eyebrow}</p>
+    <h1 class="mx-auto mt-4 max-w-3xl text-[2.25rem] leading-[1.05] font-semibold tracking-[-0.05em] sm:text-display">{title}</h1>
+    <p class="mx-auto mt-5 max-w-xl text-base leading-7 text-body sm:text-lg">{description}</p>
+
+    <div class="mx-auto mt-10 max-w-4xl">
+      <Detector defaultFilter={defaultFilter} />
+    </div>
+
+    <ul class="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-mute">
+      <li class="flex items-center gap-1.5"><span class="size-1.5 rounded-full bg-link"></span>Free & paid matches</li>
+      <li class="flex items-center gap-1.5"><span class="size-1.5 rounded-full bg-violet"></span>Crop to the exact text</li>
+      <li class="flex items-center gap-1.5"><span class="size-1.5 rounded-full bg-pink"></span>Images never stored</li>
+    </ul>
+  </div>
+</section>

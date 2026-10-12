@@ -1,0 +1,28 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PageHero from '../components/PageHero.astro';
+import HowItWorks from '../components/HowItWorks.astro';
+import FeatureGrid from '../components/FeatureGrid.astro';
+import Comparison from '../components/Comparison.astro';
+import Faq from '../components/Faq.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { homeFaq } from '../data/faq';
+import { faqSchema, webAppSchema } from '../lib/schema';
+---
+
+<Layout
+  title="Font Finder Tool — Identify Fonts from Any Image (Free & Paid)"
+  description="Upload or paste an image to identify the font. Get free and paid matches, filter to free fonts only, preview them in your own text and see the license."
+  schema={[webAppSchema(), faqSchema(homeFaq)]}
+>
+  <PageHero
+    eyebrow="Font finder · free + paid"
+    title="Find any font from an image"
+    description="Upload a screenshot, logo or photo. We match the lettering against free and commercial fonts — and show you which ones you can use for free."
+  />
+  <HowItWorks />
+  <FeatureGrid />
+  <Comparison />
+  <Faq items={homeFaq} />
+  <CtaBand />
+</Layout>
