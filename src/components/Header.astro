@@ -1,5 +1,6 @@
 ---
 import Logo from './Logo.astro';
+import ThemeToggle from './ThemeToggle.astro';
 import { mainNav } from '../data/nav';
 ---
 
@@ -20,7 +21,8 @@ import { mainNav } from '../data/nav';
     </nav>
 
     <div class="flex items-center gap-2">
-      <a href="/#detector" class="btn-square btn-primary">Find a font</a>
+      <ThemeToggle />
+      <a href="/#detector" class="btn-square btn-primary hidden sm:inline-flex">Find a font</a>
 
       <details class="group relative md:hidden">
         <summary class="btn-square btn-ghost list-none px-2.5 [&::-webkit-details-marker]:hidden" aria-label="Open menu">

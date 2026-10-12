@@ -16,6 +16,8 @@
   --color-hairline-soft: #f2f2f2;
   --color-canvas: #fafafa;
   --color-elevated: #ffffff;
+  /* Text on ink-filled surfaces (primary buttons, active pills). */
+  --color-on-ink: #ffffff;
   --color-link: #0070f3;
   --color-link-deep: #0761d1;
   --color-link-soft: #d3e5ff;
@@ -59,7 +61,33 @@
   --font-mono: var(--font-geist-mono);
 }
 
+/* The theme script in Layout.astro sets data-theme from the saved choice or the OS setting. */
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
 @layer base {
+  /* Dark palette: same ink/canvas/hairline roles, inverted (Geist dark). */
+  [data-theme=dark] {
+    color-scheme: dark;
+    --color-ink: #ededed;
+    --color-on-ink: #0a0a0a;
+    --color-body: #a1a1a1;
+    --color-mute: #878787;
+    --color-faint: #6e6e6e;
+    --color-hairline: #2e2e2e;
+    --color-hairline-soft: #1c1c1c;
+    --color-canvas: #0a0a0a;
+    --color-elevated: #111111;
+    --color-link: #3291ff;
+    --color-link-deep: #52a8ff;
+    --color-link-soft: #0d2847;
+    --color-error: #ff4d4d;
+    --color-error-deep: #ff6166;
+    --color-warning-soft: #3a2a0c;
+    --color-warning-deep: #f5b759;
+    --shadow-whisper: 0 1px 1px rgb(0 0 0 / 0.4);
+    --shadow-floating: 0 2px 2px rgb(0 0 0 / 0.4), 0 8px 16px -4px rgb(0 0 0 / 0.6), 0 0 0 1px rgb(255 255 255 / 0.06);
+  }
+
   html {
     @apply bg-canvas text-body antialiased;
     scroll-padding-top: 5rem;
@@ -87,7 +115,7 @@
     @apply inline-flex h-9 items-center justify-center gap-1.5 rounded-sm px-3 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50;
   }
   .btn-primary {
-    @apply bg-ink text-white hover:bg-ink/85;
+    @apply bg-ink text-on-ink hover:bg-ink/85;
   }
   .btn-ghost {
     @apply border border-hairline bg-elevated text-ink hover:bg-hairline-soft;

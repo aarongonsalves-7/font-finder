@@ -1,0 +1,26 @@
+---
+// Header button: flips between light and dark (saves an explicit choice).
+---
+
+<button type="button" data-theme-toggle class="btn-square btn-ghost px-2.5" aria-label="Switch to dark theme">
+  <svg class="size-4 dark:hidden" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+    <path d="M13.5 9.5A5.5 5.5 0 0 1 6.5 2.5a5.5 5.5 0 1 0 7 7Z" stroke-linejoin="round" />
+  </svg>
+  <svg class="hidden size-4 dark:block" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+    <circle cx="8" cy="8" r="3" />
+    <path d="M8 1.5v1.5M8 13v1.5M1.5 8H3M13 8h1.5M3.4 3.4l1 1M11.6 11.6l1 1M3.4 12.6l1-1M11.6 4.4l1-1" stroke-linecap="round" />
+  </svg>
+</button>
+
+<script>
+  import { isDark, setThemePref, THEME_EVENT } from '../scripts/theme';
+
+  const buttons = document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]');
+  const sync = () => {
+    for (const b of buttons) b.setAttribute('aria-label', isDark() ? 'Switch to light theme' : 'Switch to dark theme');
+  };
+  for (const b of buttons) b.addEventListener('click', () => setThemePref(isDark() ? 'light' : 'dark'));
+  document.addEventListener(THEME_EVENT, sync);
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => setTimeout(sync));
+  sync();
+</script>

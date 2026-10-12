@@ -1,5 +1,6 @@
 ---
 import Logo from './Logo.astro';
+import ThemePicker from './ThemePicker.astro';
 import { footerNav } from '../data/nav';
 
 const year = new Date().getFullYear();
@@ -12,6 +13,7 @@ const year = new Date().getFullYear();
       <p class="mt-4 text-sm leading-6 text-body">
         Identify fonts from any image and get free and paid matches, side by side.
       </p>
+      <div class="mt-6"><ThemePicker /></div>
     </div>
 
     {footerNav.map((group) => (

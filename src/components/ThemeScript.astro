@@ -1,0 +1,21 @@
+---
+// Runs before first paint so the page never flashes the wrong theme.
+// Keep in sync with src/scripts/theme.ts.
+---
+
+<script is:inline>
+  (() => {
+    const media = matchMedia('(prefers-color-scheme: dark)');
+    const apply = () => {
+      let pref = null;
+      try {
+        pref = localStorage.getItem('fft:theme');
+      } catch {}
+      const dark = pref === 'dark' || (pref !== 'light' && media.matches);
+      document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', dark ? '#0a0a0a' : '#fafafa');
+    };
+    apply();
+    media.addEventListener('change', apply);
+  })();
+</script>
