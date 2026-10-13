@@ -1,10 +1,7 @@
 {
 	"$schema": "./node_modules/wrangler/config-schema.json",
-	// Static site on Cloudflare Workers (assets only, no server code).
+	// Server-rendered Astro site on Cloudflare Workers. The @astrojs/cloudflare adapter
+	// fills in the Worker entrypoint and the static assets binding at build time.
 	"name": "fontfindertool",
-	"compatibility_date": "2026-10-06",
-	"assets": {
-		"directory": "./dist",
-		"not_found_handling": "404-page"
-	}
+	"compatibility_date": "2026-10-06"
 }

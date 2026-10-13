@@ -2,7 +2,7 @@
 
 Identify fonts from an image and get the closest matches from the Google Fonts catalog, previewed in your own text, with license info and notes on which paid fonts each match resembles.
 
-Astro 7 + Tailwind CSS v4. The site is fully static and needs no API keys: font matching runs entirely in the visitor's browser.
+Astro 7 + Tailwind CSS v4. Pages are rendered on demand in a Cloudflare Worker (`@astrojs/cloudflare`, `output: 'server'`). No API keys are needed: font matching runs entirely in the visitor's browser.
 
 ## How matching works
 
@@ -19,9 +19,9 @@ Images are never uploaded. First scan downloads ~3 MB of OCR language data, the 
 | Command | Action |
 | :-- | :-- |
 | `astro dev --background` | Dev server at http://localhost:4321 |
-| `npm run build` | Build the static site to `./dist/` |
-| `npm run preview` | Preview the build |
-| `npm run deploy` | Build and deploy to Cloudflare Workers (static assets) |
+| `npm run build` | Build the Worker (`./dist/server/`) and static assets (`./dist/client/`) |
+| `npm run preview` | Preview the build in the local Workers runtime (`workerd`) |
+| `npm run deploy` | Build and deploy the Worker to Cloudflare |
 | `npm run glyphs` | Rebuild the glyph index from the current Google Fonts catalog (downloads ~2,700 font files into `.cache/`, a few minutes) |
 | `npm run eval:matcher -- --n=150` | Accuracy check: renders sample text in random indexed fonts, degrades it and reports where the true font ranks |
 
