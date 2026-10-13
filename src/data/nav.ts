@@ -21,14 +21,15 @@ export const footerNav = [
     links: [
       { label: 'How it works', href: '/#how-it-works' },
       { label: 'FAQ', href: '/#faq' },
-      { label: 'About', href: '/about' }
+      { label: 'About us', href: '/about' },
+      { label: 'Contact us', href: '/contact' }
     ]
   },
   {
     title: 'Legal',
     links: [
-      { label: 'Privacy', href: '/privacy' },
-      { label: 'Terms', href: '/terms' }
+      { label: 'Privacy policy', href: '/privacy' },
+      { label: 'Terms & conditions', href: '/terms' }
     ]
   }
 ];
