@@ -1,5 +1,5 @@
 {
-  "name": "FontFinderTool",
+  "name": "Font Finder Tool",
   "short_name": "FontFinder",
   "icons": [
     {
@@ -15,7 +15,7 @@
       "purpose": "maskable"
     }
   ],
-  "theme_color": "#ffffff",
-  "background_color": "#ffffff",
+  "theme_color": "#fafafa",
+  "background_color": "#fafafa",
   "display": "standalone"
 }
