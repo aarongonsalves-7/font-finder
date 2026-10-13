@@ -1,0 +1,28 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PageHero from '../PageHero.astro';
+import HowItWorks from '../HowItWorks.astro';
+import FeatureGrid from '../FeatureGrid.astro';
+import Comparison from '../Comparison.astro';
+import Faq from '../Faq.astro';
+import FontFinderGuide from '../FontFinderGuide.astro';
+import { getLangFromUrl, useContent } from '../../i18n/utils';
+import { faqSchema, organizationSchema, webAppSchema, websiteSchema } from '../../lib/schema';
+
+const lang = getLangFromUrl(Astro.url);
+const { home, homeFaq } = useContent(lang);
+---
+
+<Layout
+  title={home.title}
+  description={home.description}
+  path="/"
+  schema={[websiteSchema(lang), organizationSchema(), webAppSchema(lang), faqSchema(homeFaq)]}
+>
+  <PageHero eyebrow={home.eyebrow} title={home.h1} description={home.intro} />
+  <HowItWorks />
+  <FeatureGrid />
+  <Comparison />
+  <FontFinderGuide />
+  <Faq items={homeFaq} />
+</Layout>

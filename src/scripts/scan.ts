@@ -3,9 +3,13 @@
 // OCR engine files and the index files themselves.
 import type { Worker } from 'tesseract.js';
 import { CHARSET, charFile } from '../lib/glyph-features';
-import { extractGlyphs, matchLabel, rankFonts, toInk, type IndexMeta, type OcrSymbol } from '../lib/matcher';
-import { licenseLabel, paidLookalikes, previewUrl, specimenUrl } from '../lib/fonts';
+import { extractGlyphs, matchLevel, rankFonts, toInk, type IndexMeta, type OcrSymbol } from '../lib/matcher';
+import { paidLookalikes, previewUrl, specimenUrl } from '../lib/fonts';
 import type { FontMatch, ScanResult } from '../lib/types';
+import type { Locale } from '../i18n/locales/en';
+
+/** Detector strings for the page's language, plus its language code. */
+export type ClientStrings = Locale['client'] & { lang: string };
 
 const MAX_RESULTS = 12;
 
@@ -19,9 +23,12 @@ function getWorker(): Promise<Worker> {
   return workerPromise;
 }
 
+// Thrown for a failed index download; the detector shows its localized message.
+export class IndexError extends Error {}
+
 function getMeta(): Promise<IndexMeta> {
   metaPromise ??= fetch('/glyphs/fonts.json').then((r) => {
-    if (!r.ok) throw new Error('Could not load the font index.');
+    if (!r.ok) throw new IndexError('Could not load the font index.');
     return r.json();
   });
   metaPromise.catch(() => (metaPromise = null));
@@ -32,7 +39,7 @@ function getRecords(ch: string): Promise<Uint8Array> {
   let p = recordCache.get(ch);
   if (!p) {
     p = fetch(`/glyphs/${charFile(ch)}`).then(async (r) => {
-      if (!r.ok) throw new Error('Could not load the font index.');
+      if (!r.ok) throw new IndexError('Could not load the font index.');
       return new Uint8Array(await r.arrayBuffer());
     });
     p.catch(() => recordCache.delete(ch));
@@ -52,11 +59,15 @@ export const indexSize = async () => {
   return new Set(meta.fonts.map((f) => f[0])).size;
 };
 
-export async function scanCanvas(canvas: HTMLCanvasElement, onStep: (message: string) => void): Promise<ScanResult> {
-  onStep('Loading the text reader…');
+export async function scanCanvas(
+  canvas: HTMLCanvasElement,
+  strings: ClientStrings,
+  onStep: (message: string) => void
+): Promise<ScanResult> {
+  onStep(strings.loadingReader);
   const [worker, meta] = await Promise.all([getWorker(), getMeta()]);
 
-  onStep('Reading the letters…');
+  onStep(strings.readingLetters);
   const { data: page } = await worker.recognize(canvas, {}, { blocks: true });
   const lines = (page.blocks ?? []).flatMap((b) => b.paragraphs.flatMap((p) => p.lines));
   const symbols: OcrSymbol[] = lines.flatMap((l, line) => l.words.flatMap((w) => w.symbols.map((s) => ({ ...s, line }))));
@@ -69,11 +80,15 @@ export async function scanCanvas(canvas: HTMLCanvasElement, onStep: (message: st
   }
   const glyphs = extractGlyphs(toInk(grey, canvas.width, canvas.height), symbols, CHARSET);
   if (glyphs.length < 2) {
-    throw new Error("We couldn't read enough letters. Try a tighter crop around one line of clear text.");
+    throw new Error(strings.tooFewLetters);
   }
 
   const families = new Set(meta.fonts.map((f) => f[0])).size;
-  onStep(`Comparing ${glyphs.length} letters with ${families.toLocaleString()} Google Fonts…`);
+  onStep(
+    strings.comparing
+      .replace('{letters}', String(glyphs.length))
+      .replace('{fonts}', families.toLocaleString(strings.lang))
+  );
   const chars = [...new Set(glyphs.map((g) => g.ch))];
   const records = new Map(await Promise.all(chars.map(async (ch) => [ch, await getRecords(ch)] as const)));
   // Let the status message paint before the (short) synchronous ranking.
@@ -91,10 +106,10 @@ export async function scanCanvas(canvas: HTMLCanvasElement, onStep: (message: st
       name: family,
       weight,
       category,
-      license: licenseLabel(license),
+      license,
       url: specimenUrl(family),
       previewUrl: previewUrl(id, weight),
-      match: matchLabel(score, best),
+      match: matchLevel(score, best),
       similarTo: paidLookalikes(family)
     });
     if (results.length >= MAX_RESULTS) break;

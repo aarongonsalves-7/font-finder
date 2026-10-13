@@ -119,6 +119,23 @@
   }
 }
 
+/* Translated pages. Unlayered so it beats the tracking utilities on headings. */
+:is(:lang(ja), :lang(ko)) :is(h1, h2, h3) {
+  letter-spacing: -0.01em;
+}
+:lang(ko) {
+  word-break: keep-all;
+}
+:lang(ja) {
+  line-break: strict;
+}
+:lang(ja) :is(h1, h2, h3) {
+  word-break: auto-phrase;
+}
+:lang(de) :is(h1, h2, h3) {
+  hyphens: auto;
+}
+
 /* Container with the 16px mobile gutter and ~1200px max width. */
 @utility container-page {
   @apply mx-auto w-full max-w-[1200px] px-4 sm:px-6;

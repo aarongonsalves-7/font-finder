@@ -1,8 +1,18 @@
 ---
 // Header button: flips between light and dark (saves an explicit choice).
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
+
+const t = useTranslations(getLangFromUrl(Astro.url));
 ---
 
-<button type="button" data-theme-toggle class="btn-square btn-ghost px-2.5" aria-label="Switch to dark theme">
+<button
+  type="button"
+  data-theme-toggle
+  data-label-dark={t('theme.toDark')}
+  data-label-light={t('theme.toLight')}
+  class="btn-square btn-ghost px-2.5"
+  aria-label={t('theme.toDark')}
+>
   <svg class="size-4 dark:hidden" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
     <path d="M13.5 9.5A5.5 5.5 0 0 1 6.5 2.5a5.5 5.5 0 1 0 7 7Z" stroke-linejoin="round" />
   </svg>
@@ -17,7 +27,7 @@
 
   const buttons = document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]');
   const sync = () => {
-    for (const b of buttons) b.setAttribute('aria-label', isDark() ? 'Switch to light theme' : 'Switch to dark theme');
+    for (const b of buttons) b.setAttribute('aria-label', (isDark() ? b.dataset.labelLight : b.dataset.labelDark) ?? '');
   };
   for (const b of buttons) b.addEventListener('click', () => setThemePref(isDark() ? 'light' : 'dark'));
   document.addEventListener(THEME_EVENT, sync);

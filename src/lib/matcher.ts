@@ -195,8 +195,10 @@ export function rankFonts(meta: IndexMeta, records: Map<string, Uint8Array>, gly
 }
 
 /** Describe a result relative to the best match (scores are only meaningful comparatively). */
-export function matchLabel(score: number, best: number): string {
-  if (score <= best) return 'Best match';
+export type MatchLevel = 'best' | 'veryClose' | 'close' | 'similar';
+
+export function matchLevel(score: number, best: number): MatchLevel {
+  if (score <= best) return 'best';
   const ratio = score / best;
-  return ratio <= 1.15 ? 'Very close' : ratio <= 1.4 ? 'Close' : 'Similar';
+  return ratio <= 1.15 ? 'veryClose' : ratio <= 1.4 ? 'close' : 'similar';
 }

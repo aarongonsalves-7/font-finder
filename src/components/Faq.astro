@@ -1,18 +1,20 @@
 ---
 import SectionHeading from './SectionHeading.astro';
-import type { FaqItem } from '../data/faq';
+import type { FaqItem } from '../i18n/locales/en';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
 
 interface Props {
   items: FaqItem[];
   title?: string;
 }
 
-const { items, title = 'Frequently asked questions' } = Astro.props;
+const t = useTranslations(getLangFromUrl(Astro.url));
+const { items, title = t('faq.title') } = Astro.props;
 ---
 
 <section id="faq" class="container-page scroll-mt-24 py-20 sm:py-24" aria-labelledby="faq-title">
   <div class="grid gap-10 lg:grid-cols-[1fr_2fr]">
-    <SectionHeading id="faq-title" eyebrow="FAQ" title={title} />
+    <SectionHeading id="faq-title" eyebrow={t('faq.eyebrow')} title={title} />
 
     <div class="card divide-y divide-hairline">
       {items.map((item) => (

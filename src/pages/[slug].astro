@@ -1,37 +1,18 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import PageHero from '../components/PageHero.astro';
-import HowItWorks from '../components/HowItWorks.astro';
-import Faq from '../components/Faq.astro';
-import { landingPages } from '../data/landing';
-import { breadcrumbSchema, faqSchema, webAppSchema } from '../lib/schema';
+import HomeView from '../components/views/HomeView.astro';
+import SlugView from '../components/views/SlugView.astro';
+import { defaultLang } from '../i18n/ui';
+import { isLang } from '../i18n/utils';
+import { isLandingSlug, isProseSlug } from '../i18n/routes';
 
-// Rendered on demand, so look the page up per request and fall through to 404.astro for unknown slugs.
-const page = landingPages.find((p) => p.slug === Astro.params.slug);
-if (!page) {
+// Rendered on demand. One path segment is either a language home ("/es") or an English page
+// ("/about", "/logo-font-finder"); anything else falls through to 404.astro.
+const { slug } = Astro.params;
+if (slug === defaultLang) return Astro.redirect('/', 301);
+const isHome = isLang(slug);
+if (!isHome && !isLandingSlug(slug) && !isProseSlug(slug)) {
   return new Response(null, { status: 404 });
 }
-const path = `/${page.slug}`;
 ---
 
-<Layout
-  title={page.metaTitle}
-  description={page.metaDescription}
-  schema={[webAppSchema(`https://fontfindertool.com${path}`), faqSchema(page.faq), breadcrumbSchema(page.breadcrumb, path)]}
->
-  <PageHero eyebrow={page.eyebrow} title={page.h1} description={page.intro} />
-
-  <section class="container-page py-12 sm:py-16">
-    <div class="grid gap-3 md:grid-cols-2">
-      {page.sections.map((s) => (
-        <article class="card p-6 sm:p-8">
-          <h2 class="text-heading-md">{s.heading}</h2>
-          {s.body.map((p) => <p class="mt-3 text-sm leading-6 text-body">{p}</p>)}
-        </article>
-      ))}
-    </div>
-  </section>
-
-  <HowItWorks />
-  <Faq items={page.faq} title={`${page.breadcrumb}: common questions`} />
-</Layout>
+{isHome ? <HomeView /> : <SlugView slug={slug as never} />}

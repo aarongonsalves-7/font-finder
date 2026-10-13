@@ -1,41 +1,34 @@
 ---
 import SectionHeading from './SectionHeading.astro';
+import { getLangFromUrl, useContent, useTranslations } from '../i18n/utils';
 
-const rows: [string, string | boolean, string | boolean][] = [
-  ['Every match free to download', true, false],
-  ['Filter matches by style', true, false],
-  ['Crop to the exact text', true, false],
-  ['Preview matches in your own text', true, false],
-  ['Free alternatives to paid fonts', true, 'Sometimes'],
-  ['License summary on every result', true, false],
-  ['Direct download / buy links', true, false],
-  ['Free scans per day', 'Unlimited', '~3'],
-  ['Image uploaded to a server', 'Never', 'Yes']
-];
+const lang = getLangFromUrl(Astro.url);
+const { comparison } = useContent(lang);
+const t = useTranslations(lang);
 ---
 
 <section class="container-page py-20 sm:py-24" aria-labelledby="compare-title">
-  <SectionHeading id="compare-title" eyebrow="Compare" title="More than a name guess" description="How Font Finder Tool stacks up against typical image font detectors." />
+  <SectionHeading id="compare-title" eyebrow={comparison.eyebrow} title={comparison.title} description={comparison.description} />
 
   <div class="card relative mt-10 overflow-x-auto">
     <table class="w-full text-left text-sm">
       <thead class="border-b border-hairline bg-canvas text-xs text-mute">
         <tr>
-          <th scope="col" class="px-3 py-3 font-medium sm:px-5">Feature</th>
-          <th scope="col" class="px-3 py-3 font-medium text-ink sm:px-5">Font Finder Tool</th>
-          <th scope="col" class="px-3 py-3 font-medium sm:px-5">Typical detectors</th>
+          <th scope="col" class="px-3 py-3 font-medium sm:px-5">{comparison.feature}</th>
+          <th scope="col" class="px-3 py-3 font-medium text-ink sm:px-5">{comparison.us}</th>
+          <th scope="col" class="px-3 py-3 font-medium sm:px-5">{comparison.them}</th>
         </tr>
       </thead>
       <tbody class="divide-y divide-hairline">
-        {rows.map(([label, ours, theirs]) => (
+        {comparison.rows.map(({ label, ours, theirs }) => (
           <tr>
             <th scope="row" class="px-3 py-3.5 font-normal text-body sm:px-5">{label}</th>
             {[ours, theirs].map((v, i) => (
               <td class:list={['px-3 py-3.5 sm:px-5', i === 0 ? 'font-medium text-ink' : 'text-mute']}>
                 {v === true ? (
-                  <span class="inline-flex items-center gap-1.5"><svg class="size-4 text-link" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m3.5 8.5 3 3 6-7" stroke-linecap="round" stroke-linejoin="round" /></svg><span class="sr-only">Yes</span></span>
+                  <span class="inline-flex items-center gap-1.5"><svg class="size-4 text-link" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m3.5 8.5 3 3 6-7" stroke-linecap="round" stroke-linejoin="round" /></svg><span class="sr-only">{t('compare.yes')}</span></span>
                 ) : v === false ? (
-                  <span class="inline-flex items-center"><svg class="size-4 text-faint" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4.5 8h7" stroke-linecap="round" /></svg><span class="sr-only">No</span></span>
+                  <span class="inline-flex items-center"><svg class="size-4 text-faint" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4.5 8h7" stroke-linecap="round" /></svg><span class="sr-only">{t('compare.no')}</span></span>
                 ) : (
                   v
                 )}

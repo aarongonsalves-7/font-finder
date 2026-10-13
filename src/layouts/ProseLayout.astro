@@ -1,21 +1,28 @@
 ---
 import Layout from './Layout.astro';
+import { getLangFromUrl, useTranslations } from '../i18n/utils';
 
 interface Props {
   title: string;
   description: string;
   heading: string;
+  /** Language-neutral path, for canonical and hreflang links. */
+  path?: string;
+  /** ISO date, shown in the page's language. */
   updated?: string;
   noindex?: boolean;
 }
 
-const { title, description, heading, updated, noindex } = Astro.props;
+const { title, description, heading, path, updated, noindex } = Astro.props;
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const updatedLabel = updated && new Date(updated).toLocaleDateString(lang, { dateStyle: 'long', timeZone: 'UTC' });
 ---
 
-<Layout title={title} description={description} noindex={noindex}>
+<Layout title={title} description={description} path={path} noindex={noindex}>
   <article class="container-page max-w-3xl py-16 sm:py-24">
     <h1 class="text-[2rem] leading-tight font-semibold tracking-[-0.04em] sm:text-display">{heading}</h1>
-    {updated && <p class="eyebrow mt-4">Last updated {updated}</p>}
+    {updatedLabel && <p class="eyebrow mt-4">{t('prose.updated', { date: updatedLabel })}</p>}
     <div class="rich-text mt-10">
       <slot />
     </div>

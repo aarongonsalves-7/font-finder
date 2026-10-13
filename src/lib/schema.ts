@@ -1,36 +1,38 @@
-import type { FaqItem } from '../data/faq';
+import type { FaqItem } from '../i18n/locales/en';
+import type { Lang } from '../i18n/ui';
+import { useContent, useTranslatedPath } from '../i18n/utils';
 
 const SITE = 'https://fontfindertool.com';
 
-export const webAppSchema = (url = SITE) => ({
-  '@context': 'https://schema.org',
-  '@type': 'WebApplication',
-  name: 'Font Finder Tool',
-  url,
-  applicationCategory: 'DesignApplication',
-  operatingSystem: 'Any',
-  description:
-    'Free AI font finder: upload an image to identify the font and get matching free Google Fonts, with live text previews and license info.',
-  browserRequirements: 'Requires JavaScript and a modern web browser.',
-  isAccessibleForFree: true,
-  featureList: [
-    'Find fonts by image: upload, drag in or paste a screenshot, photo or logo',
-    'AI text recognition and shape matching against 1,900+ Google Fonts',
-    'Preview every match in your own text',
-    'Free alternatives to popular paid fonts',
-    'License summary and download link for every result',
-    'Runs in your browser: images are never uploaded'
-  ],
-  image: `${SITE}/og.png`,
-  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' }
-});
+/** Absolute URL of a language-neutral path in the given language. */
+const url = (lang: Lang, path = '/') => `${SITE}${useTranslatedPath(lang)(path)}`;
 
-export const websiteSchema = () => ({
+export const webAppSchema = (lang: Lang, path = '/') => {
+  const { schema } = useContent(lang);
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'Font Finder Tool',
+    url: url(lang, path),
+    inLanguage: lang,
+    applicationCategory: 'DesignApplication',
+    operatingSystem: 'Any',
+    description: schema.webAppDescription,
+    browserRequirements: schema.browserRequirements,
+    isAccessibleForFree: true,
+    featureList: schema.featureList,
+    image: `${SITE}/og.png`,
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' }
+  };
+};
+
+export const websiteSchema = (lang: Lang) => ({
   '@context': 'https://schema.org',
   '@type': 'WebSite',
   name: 'Font Finder Tool',
   alternateName: 'Font Finder',
-  url: SITE
+  url: url(lang),
+  inLanguage: lang
 });
 
 export const organizationSchema = () => ({
@@ -52,11 +54,11 @@ export const faqSchema = (items: FaqItem[]) => ({
   }))
 });
 
-export const breadcrumbSchema = (name: string, path: string) => ({
+export const breadcrumbSchema = (lang: Lang, name: string, path: string) => ({
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
   itemListElement: [
-    { '@type': 'ListItem', position: 1, name: 'Font Finder Tool', item: SITE },
-    { '@type': 'ListItem', position: 2, name, item: `${SITE}${path}` }
+    { '@type': 'ListItem', position: 1, name: 'Font Finder Tool', item: url(lang) },
+    { '@type': 'ListItem', position: 2, name, item: url(lang, path) }
   ]
 });

@@ -1,0 +1,53 @@
+---
+// Header dropdown linking to the current page in every language.
+import { languages } from '../i18n/ui';
+import { getLangFromUrl, langs, stripLang, useTranslatedPath, useTranslations } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const translatePath = useTranslatedPath(lang);
+const path = stripLang(Astro.url.pathname);
+---
+
+<details class="group relative" data-language-picker>
+  <summary class="btn-square btn-ghost list-none gap-1.5 px-2.5 [&::-webkit-details-marker]:hidden" aria-label={t('lang.label')}>
+    <svg class="size-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+      <circle cx="8" cy="8" r="6.25" />
+      <path d="M1.75 8h12.5M8 1.75c1.7 1.8 2.5 3.9 2.5 6.25S9.7 12.45 8 14.25C6.3 12.45 5.5 10.35 5.5 8S6.3 3.55 8 1.75Z" stroke-linejoin="round" />
+    </svg>
+    <span class="hidden text-xs font-medium uppercase sm:inline">{lang}</span>
+  </summary>
+  <ul class="card absolute right-0 z-50 mt-2 w-44 p-1.5 text-sm shadow-floating">
+    {langs.map((l) => (
+      <li>
+        <a
+          href={translatePath(path, l)}
+          hreflang={l}
+          lang={l}
+          aria-current={l === lang ? 'true' : undefined}
+          class="flex items-center justify-between rounded-sm px-3 py-2 text-body hover:bg-hairline-soft hover:text-ink aria-[current]:font-medium aria-[current]:text-ink"
+        >
+          {languages[l]}
+          {l === lang && (
+            <svg class="size-3.5 text-link" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m3.5 8.5 3 3 6-7" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          )}
+        </a>
+      </li>
+    ))}
+  </ul>
+</details>
+
+<script>
+  // Close the dropdown on outside click or Escape.
+  for (const picker of document.querySelectorAll<HTMLDetailsElement>('[data-language-picker]')) {
+    document.addEventListener('click', (e) => {
+      if (picker.open && !picker.contains(e.target as Node)) picker.open = false;
+    });
+    picker.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && picker.open) {
+        picker.open = false;
+        picker.querySelector('summary')?.focus();
+      }
+    });
+  }
+</script>

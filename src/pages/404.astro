@@ -1,15 +1,16 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import ErrorState from '../components/ErrorState.astro';
+import { getLangFromUrl, useContent, useTranslatedPath } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const { notFound } = useContent(lang).errors;
+const translatePath = useTranslatedPath(lang);
 ---
 
-<Layout title="Page not found | Font Finder Tool" description="This page doesn't exist." noindex>
-  <ErrorState
-    code="404"
-    title="This page is missing"
-    message="The page you’re looking for doesn’t exist. Maybe the font you’re after does, though."
-  >
-    <a href="/" class="btn-pill btn-primary">Find a font</a>
-    <a href="/contact" class="btn-pill btn-ghost">Report a broken link</a>
+<Layout title={notFound.title} description={notFound.description} noindex>
+  <ErrorState code="404" title={notFound.heading} message={notFound.message}>
+    <a href={translatePath('/')} class="btn-pill btn-primary">{notFound.primary}</a>
+    <a href={translatePath('/contact')} class="btn-pill btn-ghost">{notFound.secondary}</a>
   </ErrorState>
 </Layout>

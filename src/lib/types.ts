@@ -6,13 +6,13 @@ export interface FontMatch {
   name: string;
   weight: number;
   category: Category | string;
-  /** Short human-readable license summary. */
+  /** License id from the index, e.g. "OFL-1.1" (older saved scans hold an English summary). */
   license: string;
   /** Google Fonts specimen page. */
   url: string;
   /** Fontsource woff2 used for the live preview. */
   previewUrl: string;
-  /** Closeness relative to the best match, e.g. "Very close". */
+  /** Closeness relative to the best match, e.g. "veryClose" (older saved scans hold an English label). */
   match: string;
   /** Well-known commercial fonts this free font resembles. */
   similarTo: string[];

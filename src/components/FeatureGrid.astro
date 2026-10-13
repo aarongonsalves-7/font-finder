@@ -1,46 +1,18 @@
 ---
 import SectionHeading from './SectionHeading.astro';
+import { getLangFromUrl, useContent } from '../i18n/utils';
 
-const features = [
-  {
-    title: 'Every match is free',
-    body: 'Results come from the 1,900+ families on Google Fonts, all open source and licensed for commercial use. Filter them by style in one tap.',
-    demo: 'filter'
-  },
-  {
-    title: 'Live preview in your text',
-    body: 'Candidates render your words in the actual font, so you compare letterforms instead of guessing from a name.',
-    demo: 'preview'
-  },
-  {
-    title: 'Free alternatives to paid fonts',
-    body: 'Matches that resemble famous commercial fonts are flagged, so you know Inter can stand in for Helvetica and Montserrat for Gotham.',
-    demo: 'alts'
-  },
-  {
-    title: 'License at a glance',
-    body: 'See whether a font is OFL, Apache or commercial before you download, with no digging through foundry pages.',
-    demo: 'license'
-  },
-  {
-    title: 'Crop before you scan',
-    body: 'Select the exact line you care about. Busy photos and posters with many fonts stop confusing the matcher.',
-    demo: 'crop'
-  },
-  {
-    title: 'Runs in your browser',
-    body: 'Matching happens on your device. Your image is never uploaded, there are no daily limits, and recent scans stay in your browser.',
-    demo: 'private'
-  }
-];
+const { features: copy } = useContent(getLangFromUrl(Astro.url));
+const demos = ['filter', 'preview', 'alts', 'license', 'crop', 'private'];
+const features = copy.items.map((item, i) => ({ ...item, demo: demos[i] }));
 ---
 
 <section class="container-page py-20 sm:py-24" aria-labelledby="features-title">
   <SectionHeading
     id="features-title"
-    eyebrow="Why Font Finder Tool"
-    title="Built for people who need to actually use the font"
-    description="Most font identifiers stop at a name. We take you all the way to a font you can legally use, free when possible."
+    eyebrow={copy.eyebrow}
+    title={copy.title}
+    description={copy.description}
   />
 
   <ul class="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -49,12 +21,12 @@ const features = [
         <div class="mb-6 flex h-24 items-center justify-center rounded-sm border border-hairline-soft bg-canvas" aria-hidden="true">
           {f.demo === 'filter' && (
             <span class="inline-flex rounded-pill border border-hairline bg-elevated p-1 text-xs font-medium">
-              <span class="rounded-pill px-3 py-1 text-body">All</span>
-              <span class="rounded-pill bg-ink px-3 py-1 text-on-ink">Serif</span>
-              <span class="rounded-pill px-3 py-1 text-body">Script</span>
+              <span class="rounded-pill px-3 py-1 text-body">{copy.demo.all}</span>
+              <span class="rounded-pill bg-ink px-3 py-1 text-on-ink">{copy.demo.serif}</span>
+              <span class="rounded-pill px-3 py-1 text-body">{copy.demo.script}</span>
             </span>
           )}
-          {f.demo === 'preview' && <span class="font-serif text-3xl tracking-tight text-ink italic">Hello there</span>}
+          {f.demo === 'preview' && <span class="font-serif text-3xl tracking-tight text-ink italic" lang="en">{copy.demo.preview}</span>}
           {f.demo === 'alts' && (
             <span class="flex flex-wrap justify-center gap-1.5 text-xs">
               <span class="rounded-pill border border-hairline bg-elevated px-2.5 py-1 text-ink">Montserrat</span>
@@ -64,7 +36,7 @@ const features = [
           )}
           {f.demo === 'license' && (
             <span class="flex gap-1.5 text-xs font-medium">
-              <span class="rounded-pill bg-link-soft px-2.5 py-1 text-link-deep">OFL · commercial OK</span>
+              <span class="rounded-pill bg-link-soft px-2.5 py-1 text-link-deep">{copy.demo.license}</span>
             </span>
           )}
           {f.demo === 'crop' && (

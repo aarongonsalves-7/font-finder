@@ -1,19 +1,25 @@
 ---
 import Logo from './Logo.astro';
 import ThemeToggle from './ThemeToggle.astro';
+import LanguagePicker from './LanguagePicker.astro';
 import { mainNav } from '../data/nav';
+import { getLangFromUrl, useTranslatedPath, useTranslations } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const translatePath = useTranslatedPath(lang);
 ---
 
 <header class="sticky top-0 z-40 border-b border-hairline bg-canvas/85 backdrop-blur-md">
   <div class="container-page flex h-16 items-center justify-between gap-6">
     <Logo />
 
-    <nav aria-label="Main" class="hidden md:block">
+    <nav aria-label={t('nav.main')} class="hidden md:block">
       <ul class="flex items-center gap-1 text-sm">
         {mainNav.map((item) => (
           <li>
-            <a href={item.href} class="rounded-full px-3 py-2 text-body transition-colors hover:bg-hairline-soft hover:text-ink">
-              {item.label}
+            <a href={translatePath(item.href)} class="rounded-full px-3 py-2 text-body transition-colors hover:bg-hairline-soft hover:text-ink">
+              {t(item.label)}
             </a>
           </li>
         ))}
@@ -21,11 +27,12 @@ import { mainNav } from '../data/nav';
     </nav>
 
     <div class="flex items-center gap-2">
+      <LanguagePicker />
       <ThemeToggle />
-      <a href="/#detector" class="btn-square btn-primary hidden sm:inline-flex">Find a font</a>
+      <a href={translatePath('/#detector')} class="btn-square btn-primary hidden sm:inline-flex">{t('nav.findFont')}</a>
 
       <details class="group relative md:hidden">
-        <summary class="btn-square btn-ghost list-none px-2.5 [&::-webkit-details-marker]:hidden" aria-label="Open menu">
+        <summary class="btn-square btn-ghost list-none px-2.5 [&::-webkit-details-marker]:hidden" aria-label={t('nav.openMenu')}>
           <svg class="size-4 group-open:hidden" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
             <path d="M2 4.5h12M2 8h12M2 11.5h12" />
           </svg>
@@ -33,11 +40,11 @@ import { mainNav } from '../data/nav';
             <path d="M3.5 3.5l9 9M12.5 3.5l-9 9" />
           </svg>
         </summary>
-        <nav aria-label="Mobile" class="card absolute right-0 mt-2 w-56 p-2 shadow-floating">
+        <nav aria-label={t('nav.mobile')} class="card absolute right-0 mt-2 w-56 p-2 shadow-floating">
           <ul class="text-sm">
             {mainNav.map((item) => (
               <li>
-                <a href={item.href} class="block rounded-sm px-3 py-2.5 text-body hover:bg-hairline-soft hover:text-ink">{item.label}</a>
+                <a href={translatePath(item.href)} class="block rounded-sm px-3 py-2.5 text-body hover:bg-hairline-soft hover:text-ink">{t(item.label)}</a>
               </li>
             ))}
           </ul>

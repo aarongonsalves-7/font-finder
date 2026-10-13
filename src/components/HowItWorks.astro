@@ -1,31 +1,15 @@
 ---
 import SectionHeading from './SectionHeading.astro';
+import { getLangFromUrl, useContent } from '../i18n/utils';
 
-const steps = [
-  {
-    title: 'Upload or paste',
-    body: 'Drop a screenshot, photo, logo or poster, or paste straight from your clipboard with Ctrl+V.'
-  },
-  {
-    title: 'Crop the text',
-    body: 'Drag a box around one line of lettering. A tight crop with 10+ characters gives the most accurate match.'
-  },
-  {
-    title: 'Compare matches',
-    body: 'We compare every letter against 1,900+ Google Fonts and show the closest matches, rendered in your own text.'
-  },
-  {
-    title: 'Download free',
-    body: 'Every match is a free Google Font. Open it on Google Fonts to download it or copy the embed code for your site.'
-  }
-];
+const { howItWorks } = useContent(getLangFromUrl(Astro.url));
 ---
 
 <section id="how-it-works" class="container-page scroll-mt-24 py-20 sm:py-24" aria-labelledby="how-title">
-  <SectionHeading id="how-title" eyebrow="How it works" title="How to find a font from an image in four steps" />
+  <SectionHeading id="how-title" eyebrow={howItWorks.eyebrow} title={howItWorks.title} />
 
   <ol class="mt-10 grid gap-px overflow-hidden rounded-md border border-hairline bg-hairline sm:grid-cols-2 lg:grid-cols-4">
-    {steps.map((step, i) => (
+    {howItWorks.steps.map((step, i) => (
       <li class="bg-elevated p-6">
         <span class="font-mono text-xs text-mute">0{i + 1}</span>
         <h3 class="mt-4 text-heading-md">{step.title}</h3>

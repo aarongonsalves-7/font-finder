@@ -1,6 +1,5 @@
-import { CATEGORY_LABELS, weightLabel } from '../lib/fonts';
 import type { FontMatch, ScanResult } from '../lib/types';
-import { scanCanvas, warmUp } from './scan';
+import { IndexError, scanCanvas, warmUp, type ClientStrings } from './scan';
 
 type View = 'upload' | 'crop' | 'loading' | 'results';
 
@@ -13,7 +12,14 @@ interface HistoryEntry {
 const MAX_FILE_BYTES = 15 * 1024 * 1024;
 const HISTORY_KEY = 'fft:history:v3';
 const HISTORY_SIZE = 6;
-const DEFAULT_PREVIEW = 'The quick brown fox jumps';
+
+// Scans saved before the site was translated hold English labels instead of ids.
+const LEGACY_MATCH: Record<string, keyof ClientStrings['match']> = {
+  'Best match': 'best',
+  'Very close': 'veryClose',
+  Close: 'close',
+  Similar: 'similar'
+};
 
 const FILTER_CLASS =
   'flex-1 rounded-pill px-3.5 py-1.5 text-sm font-medium whitespace-nowrap text-body transition-colors aria-checked:bg-ink aria-checked:text-on-ink sm:flex-none';
@@ -69,11 +75,11 @@ function previewFont(el: HTMLElement, url: string) {
 
 // ---------- image helpers ----------
 
-function loadImage(src: string): Promise<HTMLImageElement> {
+function loadImage(src: string, errorMessage: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = () => resolve(img);
-    img.onerror = () => reject(new Error('Could not read that image.'));
+    img.onerror = () => reject(new Error(errorMessage));
     img.src = src;
   });
 }
@@ -125,6 +131,16 @@ function writeHistory(entries: HistoryEntry[]) {
 // ---------- detector ----------
 
 export function initDetector(root: HTMLElement) {
+  const strings: ClientStrings = JSON.parse(root.dataset.strings!);
+  const DEFAULT_PREVIEW = strings.defaultPreview;
+  const fill = (template: string, vars: Record<string, string | number>) =>
+    template.replace(/\{(\w+)\}/g, (m, key: string) => (key in vars ? String(vars[key]) : m));
+  const categoryLabel = (c: string) => strings.categories[c as keyof ClientStrings['categories']] ?? c;
+  const weightLabel = (w: number) => (w >= 700 ? strings.bold : w === 400 ? strings.regular : String(w));
+  const matchText = (m: string) => strings.match[(LEGACY_MATCH[m] ?? m) as keyof ClientStrings['match']] ?? m;
+  const licenseText = (id: string) =>
+    id.includes('·') ? id : (strings.licenses[id as keyof ClientStrings['licenses']] ?? fill(strings.licenses.other, { name: id || 'Open' }));
+
   const $ = <T extends Element = HTMLElement>(sel: string) => root.querySelector<T>(sel)!;
   const $$ = <T extends Element = HTMLElement>(sel: string) => [...root.querySelectorAll<T>(sel)];
 
@@ -165,15 +181,15 @@ export function initDetector(root: HTMLElement) {
 
   async function acceptFile(file: File | undefined | null) {
     if (!file) return;
-    if (!file.type.startsWith('image/')) return showError('That file is not an image. Try a PNG, JPG or WebP.');
-    if (file.size > MAX_FILE_BYTES) return showError('That image is over 15 MB. Try a screenshot or a smaller export.');
+    if (!file.type.startsWith('image/')) return showError(strings.notImage);
+    if (file.size > MAX_FILE_BYTES) return showError(strings.tooLarge);
     showError(null);
     warmUp(); // fetch the OCR engine while the user crops
 
     if (objectUrl) URL.revokeObjectURL(objectUrl);
     objectUrl = URL.createObjectURL(file);
     try {
-      image = await loadImage(objectUrl);
+      image = await loadImage(objectUrl, strings.unreadable);
     } catch (err) {
       return showError((err as Error).message);
     }
@@ -272,14 +288,14 @@ export function initDetector(root: HTMLElement) {
     show('loading');
 
     try {
-      const result = await scanCanvas(canvas, (message) => (loadingText.textContent = message));
+      const result = await scanCanvas(canvas, strings, (message) => (loadingText.textContent = message));
       writeHistory([{ at: Date.now(), thumb, result }, ...readHistory()]);
       renderHistory();
       showResults(result, thumb);
     } catch (err) {
       console.error(err);
       show('crop');
-      showError((err as Error).message || 'Something went wrong. Please try again.');
+      showError(err instanceof IndexError ? strings.indexError : (err as Error).message || strings.generic);
     }
   });
 
@@ -303,8 +319,11 @@ export function initDetector(root: HTMLElement) {
     $<HTMLImageElement>('[data-result-thumb]').src = thumb;
 
     const n = result.results.length;
-    $('[data-result-title]').textContent = `${n} free font ${n === 1 ? 'match' : 'matches'}`;
-    $('[data-result-meta]').textContent = `${result.letters} letters compared${result.text ? ` · read “${result.text}”` : ''}`;
+    $('[data-result-title]').textContent = fill(n === 1 ? strings.resultsOne : strings.resultsMany, { n });
+    $('[data-result-meta]').textContent = [
+      fill(strings.lettersCompared, { n: result.letters }),
+      ...(result.text ? [fill(strings.readText, { text: result.text })] : [])
+    ].join(' · ');
 
     renderFilters();
     renderList();
@@ -317,7 +336,7 @@ export function initDetector(root: HTMLElement) {
     if (!current) return;
     const counts = new Map<string, number>();
     for (const r of current.results) counts.set(r.category, (counts.get(r.category) ?? 0) + 1);
-    const options = [['all', 'All', current.results.length] as const, ...[...counts].map(([c, n]) => [c, CATEGORY_LABELS[c] ?? c, n] as const)];
+    const options = [['all', strings.all, current.results.length] as const, ...[...counts].map(([c, n]) => [c, categoryLabel(c), n] as const)];
 
     filterGroup.replaceChildren(
       ...options.map(([value, label, count]) => {
@@ -356,13 +375,13 @@ export function initDetector(root: HTMLElement) {
     q('[data-rank]').textContent = `#${String(rank).padStart(2, '0')}`;
     q('[data-name]').textContent = r.name;
     q('[data-name]').title = r.name;
-    q('[data-meta]').textContent = [CATEGORY_LABELS[r.category] ?? r.category, weightLabel(r.weight), r.match].join(' · ');
+    q('[data-meta]').textContent = [categoryLabel(r.category), weightLabel(r.weight), matchText(r.match)].join(' · ');
 
     const preview = q('[data-preview]');
     preview.textContent = previewText;
     previewFont(preview, r.previewUrl);
 
-    q('[data-license]').textContent = r.license;
+    q('[data-license]').textContent = licenseText(r.license);
 
     if (r.similarTo.length) {
       q('[data-similar]').hidden = false;
@@ -390,9 +409,9 @@ export function initDetector(root: HTMLElement) {
     const label = button.textContent;
     try {
       await navigator.clipboard.writeText(text);
-      button.textContent = 'Copied';
+      button.textContent = strings.copied;
     } catch {
-      button.textContent = 'Copy failed';
+      button.textContent = strings.copyFailed;
     }
     setTimeout(() => (button.textContent = label), 1500);
   }
@@ -400,7 +419,7 @@ export function initDetector(root: HTMLElement) {
   $<HTMLButtonElement>('[data-copy-all]').addEventListener('click', (e) => {
     if (!current) return;
     const lines = current.results.map((r, i) => `${i + 1}. ${r.name}: ${r.url}`);
-    copyText(`Font matches from fontfindertool.com\n${lines.join('\n')}`, e.currentTarget as HTMLButtonElement);
+    copyText(`${strings.copyAllHeader}\n${lines.join('\n')}`, e.currentTarget as HTMLButtonElement);
   });
 
   // ----- history -----
@@ -421,7 +440,7 @@ export function initDetector(root: HTMLElement) {
         });
         const label = document.createElement('span');
         label.className = 'truncate px-1 text-xs text-body';
-        label.textContent = entry.result.results[0]?.name ?? 'Scan';
+        label.textContent = entry.result.results[0]?.name ?? strings.scan;
         btn.appendChild(img);
         btn.appendChild(label);
         btn.addEventListener('click', () => showResults(entry.result, entry.thumb));

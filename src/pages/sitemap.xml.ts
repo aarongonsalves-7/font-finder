@@ -1,19 +1,22 @@
 import type { APIRoute } from 'astro';
-import { landingPages } from '../data/landing';
+import { defaultLang } from '../i18n/ui';
+import { alternates } from '../i18n/utils';
+import { pagePaths } from '../i18n/routes';
 
-// Top-level .astro pages, minus dynamic routes and error pages. Landing pages come from [slug].astro.
-const staticPaths = Object.keys(import.meta.glob('./*.astro'))
-  .map((file) => file.slice(2, -'.astro'.length))
-  .filter((name) => !name.startsWith('[') && name !== '404' && name !== '500')
-  .map((name) => (name === 'index' ? '/' : `/${name}/`));
-
-const paths = [...staticPaths, ...landingPages.map((page) => `/${page.slug}/`)].sort();
-
+// One <url> per page per language, each listing every language version (plus x-default) as
+// hreflang alternates, so search engines pair the translations.
 export const GET = (({ site }) => {
-  const urls = paths.map((path) => `  <url><loc>${new URL(path, site).href}</loc></url>`).join('\n');
+  const urls = pagePaths.flatMap((path) => {
+    const alts = alternates(path, site!);
+    const links = [
+      ...alts.map((alt) => `    <xhtml:link rel="alternate" hreflang="${alt.lang}" href="${alt.href}"/>`),
+      `    <xhtml:link rel="alternate" hreflang="x-default" href="${alts.find((alt) => alt.lang === defaultLang)!.href}"/>`
+    ].join('\n');
+    return alts.map((alt) => `  <url>\n    <loc>${alt.href}</loc>\n${links}\n  </url>`);
+  });
   const body = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls}
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+${urls.join('\n')}
 </urlset>
 `;
   return new Response(body, { headers: { 'Content-Type': 'application/xml; charset=utf-8' } });

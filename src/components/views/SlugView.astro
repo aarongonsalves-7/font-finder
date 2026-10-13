@@ -1,0 +1,60 @@
+---
+// A landing or prose page by slug. Routes validate the slug before rendering this.
+import Layout from '../../layouts/Layout.astro';
+import ProseLayout from '../../layouts/ProseLayout.astro';
+import PageHero from '../PageHero.astro';
+import HowItWorks from '../HowItWorks.astro';
+import Faq from '../Faq.astro';
+import { isLandingSlug, proseUpdated, type LandingSlug, type ProseSlug } from '../../i18n/routes';
+import { getLangFromUrl, localizeHtml, useContent, useTranslations } from '../../i18n/utils';
+import { breadcrumbSchema, faqSchema, webAppSchema } from '../../lib/schema';
+
+interface Props {
+  slug: LandingSlug | ProseSlug;
+}
+
+const { slug } = Astro.props;
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const content = useContent(lang);
+const path = `/${slug}`;
+const landing = isLandingSlug(slug) ? content.landing[slug] : undefined;
+const prose = isLandingSlug(slug) ? undefined : content.pages[slug];
+---
+
+{landing && (
+  <Layout
+    title={landing.metaTitle}
+    description={landing.metaDescription}
+    path={path}
+    schema={[webAppSchema(lang, path), faqSchema(landing.faq), breadcrumbSchema(lang, landing.breadcrumb, path)]}
+  >
+    <PageHero eyebrow={landing.eyebrow} title={landing.h1} description={landing.intro} />
+
+    <section class="container-page py-12 sm:py-16">
+      <div class="grid gap-3 md:grid-cols-2">
+        {landing.sections.map((s) => (
+          <article class="card p-6 sm:p-8">
+            <h2 class="text-heading-md">{s.heading}</h2>
+            {s.body.map((p) => <p class="mt-3 text-sm leading-6 text-body">{p}</p>)}
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <HowItWorks />
+    <Faq items={landing.faq} title={t('faq.landingTitle', { name: landing.breadcrumb })} />
+  </Layout>
+)}
+
+{prose && (
+  <ProseLayout
+    title={prose.title}
+    description={prose.description}
+    heading={prose.heading}
+    path={path}
+    updated={proseUpdated[slug as ProseSlug]}
+  >
+    <Fragment set:html={localizeHtml(prose.html, lang)} />
+  </ProseLayout>
+)}

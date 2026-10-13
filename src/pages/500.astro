@@ -1,16 +1,16 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import ErrorState from '../components/ErrorState.astro';
+import { getLangFromUrl, useContent, useTranslatedPath } from '../i18n/utils';
+
+const lang = getLangFromUrl(Astro.url);
+const { serverError } = useContent(lang).errors;
 ---
 
-<Layout title="Something went wrong | Font Finder Tool" description="An unexpected error occurred." noindex>
-  <ErrorState
-    code="500"
-    title="Something went wrong"
-    message="An unexpected error stopped this page from loading. Try again in a moment, or head back to the font finder."
-  >
-    <button type="button" class="btn-pill btn-primary" data-reload>Try again</button>
-    <a href="/" class="btn-pill btn-ghost">Go home</a>
+<Layout title={serverError.title} description={serverError.description} noindex>
+  <ErrorState code="500" title={serverError.heading} message={serverError.message}>
+    <button type="button" class="btn-pill btn-primary" data-reload>{serverError.primary}</button>
+    <a href={useTranslatedPath(lang)('/')} class="btn-pill btn-ghost">{serverError.secondary}</a>
   </ErrorState>
 </Layout>
 

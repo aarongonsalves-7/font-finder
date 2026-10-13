@@ -3,6 +3,8 @@ import { Font } from 'astro:assets';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import ThemeScript from '../components/ThemeScript.astro';
+import { defaultLang, ogLocales } from '../i18n/ui';
+import { alternates, getLangFromUrl, useTranslatedPath, useTranslations } from '../i18n/utils';
 import '../styles/global.css';
 
 interface Props {
@@ -13,27 +15,31 @@ interface Props {
   noindex?: boolean;
   /** Alt text for the social share image. */
   ogImageAlt?: string;
+  /**
+   * Language-neutral path of this page ("/", "/about"). Indexable pages pass it so the canonical
+   * URL and hreflang links point at every language version.
+   */
+  path?: string;
 }
 
-const {
-  title,
-  description,
-  schema = [],
-  noindex = false,
-  ogImageAlt = 'Font Finder Tool: free font finder that identifies fonts from any image'
-} = Astro.props;
-const canonical = new URL(Astro.url.pathname, Astro.site);
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+const { title, description, schema = [], noindex = false, ogImageAlt = t('site.ogImageAlt'), path } = Astro.props;
+const canonical = new URL(path === undefined ? Astro.url.pathname : useTranslatedPath(lang)(path), Astro.site);
+const hreflangs = path === undefined || noindex ? [] : alternates(path, Astro.site!);
 const ogImage = new URL('/og.png', Astro.site);
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={lang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    {hreflangs.map((alt) => <link rel="alternate" hreflang={alt.lang} href={alt.href} />)}
+    {hreflangs.length > 0 && <link rel="alternate" hreflang="x-default" href={hreflangs.find((alt) => alt.lang === defaultLang)!.href} />}
     <meta name="robots" content={noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1'} />
     <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -52,7 +58,8 @@ const ogImage = new URL('/og.png', Astro.site);
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
-    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale" content={ogLocales[lang]} />
+    {hreflangs.filter((alt) => alt.lang !== lang).map((alt) => <meta property="og:locale:alternate" content={ogLocales[alt.lang]} />)}
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:secure_url" content={ogImage} />
     <meta property="og:image:type" content="image/png" />
@@ -73,7 +80,7 @@ const ogImage = new URL('/og.png', Astro.site);
   </head>
   <body class="flex min-h-dvh flex-col font-sans">
     <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 btn-square btn-primary">
-      Skip to content
+      {t('site.skip')}
     </a>
     <Header />
     <main id="main" class="flex-1">
