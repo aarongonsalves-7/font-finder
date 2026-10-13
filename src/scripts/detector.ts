@@ -399,7 +399,7 @@ export function initDetector(root: HTMLElement) {
 
   $<HTMLButtonElement>('[data-copy-all]').addEventListener('click', (e) => {
     if (!current) return;
-    const lines = current.results.map((r, i) => `${i + 1}. ${r.name} — ${r.url}`);
+    const lines = current.results.map((r, i) => `${i + 1}. ${r.name}: ${r.url}`);
     copyText(`Font matches from fontfindertool.com\n${lines.join('\n')}`, e.currentTarget as HTMLButtonElement);
   });
 

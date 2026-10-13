@@ -3,12 +3,12 @@ import ProseLayout from '../layouts/ProseLayout.astro';
 ---
 
 <ProseLayout
-  title="About — Font Finder Tool"
+  title="About | Font Finder Tool"
   description="Font Finder Tool helps designers and developers identify fonts from images and find free alternatives."
   heading="About Font Finder Tool"
 >
   <p>Font Finder Tool started with a simple frustration: font identifiers tell you a name, then leave you to work out whether you can afford it, whether you’re allowed to use it, and what it actually looks like with your words.</p>
-  <p>So we built a finder that only returns fonts you can actually use. Every result is a free, open-source Google Font, previewed in your own text, with its license and a direct download link. When your image uses a commercial font, you get the closest free stand-ins — and cards note which paid fonts they resemble.</p>
+  <p>So we built a finder that only returns fonts you can actually use. Every result is a free, open source Google Font, previewed in your own text, with its license and a direct download link. When your image uses a commercial font, you get the closest free alternatives, and cards note which paid fonts they resemble.</p>
 
   <h2>How matching works</h2>
   <p>Everything runs in your browser. <a href="https://tesseract.projectnaptha.com" rel="noopener">Tesseract.js</a> reads the letters in your crop, then each letter’s shape and proportions are compared with a prebuilt index of every font on <a href="https://fonts.google.com" rel="noopener">Google Fonts</a> (served via <a href="https://fontsource.org" rel="noopener">Fontsource</a>). Your image is never uploaded.</p>

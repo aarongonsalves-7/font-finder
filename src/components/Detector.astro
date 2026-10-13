@@ -9,7 +9,7 @@
       <label
         data-dropzone
         for="ff-file"
-        class="group flex min-h-72 cursor-pointer flex-col items-center justify-center gap-4 rounded-md border border-dashed border-hairline bg-canvas px-6 py-12 text-center transition-colors hover:border-faint focus-within:border-link data-[drag=true]:border-link data-[drag=true]:bg-link-soft/40"
+        class="group flex min-h-60 cursor-pointer sm:min-h-72 flex-col items-center justify-center gap-4 rounded-md border border-dashed border-hairline bg-canvas px-4 py-10 text-center transition-colors sm:px-6 sm:py-12 hover:border-faint focus-within:border-link data-[drag=true]:border-link data-[drag=true]:bg-link-soft/40"
       >
         <span class="grid size-12 place-items-center rounded-full border border-hairline bg-elevated text-ink shadow-whisper" aria-hidden="true">
           <svg class="size-5" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -17,10 +17,11 @@
           </svg>
         </span>
         <span>
-          <span class="block text-base font-medium text-ink">Drop an image, paste it, or <span class="text-link group-hover:underline">browse</span></span>
+          <span class="block text-base font-medium text-ink pointer-coarse:hidden">Drop an image, paste it, or <span class="text-link group-hover:underline">browse</span></span>
+          <span class="hidden text-base font-medium text-ink pointer-coarse:block">Tap to <span class="text-link">choose a photo or screenshot</span></span>
           <span class="mt-1 block text-sm text-mute">Screenshots, logos, posters, photos · processed on your device</span>
         </span>
-        <span class="flex flex-wrap items-center justify-center gap-2 text-xs text-mute">
+        <span class="flex flex-wrap items-center justify-center gap-2 text-xs text-mute pointer-coarse:hidden">
           <kbd class="rounded-sm border border-hairline bg-elevated px-1.5 py-0.5 font-mono">Ctrl</kbd>+<kbd class="rounded-sm border border-hairline bg-elevated px-1.5 py-0.5 font-mono">V</kbd>
           <span>to paste from clipboard</span>
         </span>
@@ -31,12 +32,12 @@
     <!-- 2. Crop -->
     <div data-view="crop" hidden>
       <div class="flex flex-wrap items-center justify-between gap-3 border-b border-hairline px-4 py-3 sm:px-5">
-        <p class="text-sm text-body"><strong class="font-medium text-ink">Drag over the text</strong> you want to identify — one line works best.</p>
+        <p class="text-sm text-body"><strong class="font-medium text-ink">Drag over the text</strong> you want to identify. One line works best.</p>
         <button type="button" data-clear-crop class="btn-square btn-ghost invisible h-8 text-xs">Use whole image</button>
       </div>
       <div class="bg-[repeating-conic-gradient(var(--color-hairline-soft)_0_25%,var(--color-elevated)_0_50%)] bg-size-[16px_16px] p-4 sm:p-6">
         <div data-crop-area class="relative mx-auto w-fit max-w-full overflow-hidden cursor-crosshair touch-none select-none">
-          <img data-crop-img alt="Your uploaded image" class="block max-h-[420px] max-w-full" draggable="false" />
+          <img data-crop-img alt="Your uploaded image" class="block max-h-[60vh] max-w-full sm:max-h-[420px]" draggable="false" />
           <div data-crop-box class="pointer-events-none absolute border-2 border-link bg-link/10 shadow-[0_0_0_9999px_rgb(0_0_0/0.35)]" hidden></div>
         </div>
       </div>
@@ -65,7 +66,7 @@
             <p data-result-meta class="text-xs text-mute"></p>
           </div>
         </div>
-        <div class="flex gap-2">
+        <div class="grid grid-cols-2 gap-2 sm:flex">
           <button type="button" data-copy-all class="btn-square btn-ghost">Copy list</button>
           <button type="button" data-reset class="btn-square btn-primary">New scan</button>
         </div>
@@ -75,7 +76,7 @@
         <div data-filters role="radiogroup" aria-label="Filter by style" class="inline-flex w-full overflow-x-auto rounded-pill border border-hairline bg-elevated p-1 sm:w-auto"></div>
         <label class="flex items-center gap-2 text-sm text-mute">
           <span class="shrink-0">Preview text</span>
-          <input data-preview-input type="text" maxlength="60" class="h-9 w-full min-w-0 rounded-sm border border-hairline bg-elevated px-3 text-sm text-ink placeholder:text-faint sm:w-64" placeholder="Type to preview" />
+          <input data-preview-input type="text" maxlength="60" class="h-10 w-full min-w-0 rounded-sm border border-hairline bg-elevated px-3 text-base text-ink sm:h-9 sm:text-sm placeholder:text-faint sm:w-64" placeholder="Type to preview" />
         </label>
       </div>
 
@@ -109,7 +110,7 @@
       </div>
 
       <div class="flex min-h-24 items-center overflow-hidden rounded-sm border border-hairline-soft bg-canvas px-4 py-3">
-        <p data-preview class="w-full break-words text-3xl leading-tight text-ink transition-opacity"></p>
+        <p data-preview class="w-full break-words text-2xl sm:text-3xl leading-tight text-ink transition-opacity"></p>
       </div>
 
       <p data-license class="text-xs text-body"></p>

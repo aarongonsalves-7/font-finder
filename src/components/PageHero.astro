@@ -23,14 +23,14 @@ const { eyebrow, title, description } = Astro.props;
 
   <div class="container-page pt-14 pb-16 text-center sm:pt-24 sm:pb-24">
     <p class="eyebrow text-body">{eyebrow}</p>
-    <h1 class="mx-auto mt-4 max-w-3xl text-[2.25rem] leading-[1.05] font-semibold tracking-[-0.05em] sm:text-display">{title}</h1>
+    <h1 class="mx-auto mt-4 max-w-3xl text-[2rem] leading-[1.1] sm:leading-[1.05] font-semibold tracking-[-0.05em] sm:text-[2.5rem] lg:text-display">{title}</h1>
     <p class="mx-auto mt-5 max-w-xl text-base leading-7 text-body sm:text-lg">{description}</p>
 
     <div class="mx-auto mt-10 max-w-4xl">
       <Detector />
     </div>
 
-    <ul class="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-mute">
+    <ul class="mt-8 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm text-mute sm:gap-x-6">
       <li class="flex items-center gap-1.5"><span class="size-1.5 rounded-full bg-link"></span>1,900+ Google Fonts</li>
       <li class="flex items-center gap-1.5"><span class="size-1.5 rounded-full bg-violet"></span>Crop to the exact text</li>
       <li class="flex items-center gap-1.5"><span class="size-1.5 rounded-full bg-pink"></span>Runs in your browser</li>

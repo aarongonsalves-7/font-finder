@@ -9,8 +9,37 @@ export const webAppSchema = (url = SITE) => ({
   url,
   applicationCategory: 'DesignApplication',
   operatingSystem: 'Any',
-  description: 'Identify fonts from images and find matching free Google Fonts, with live previews and license info.',
+  description:
+    'Free AI font finder: upload an image to identify the font and get matching free Google Fonts, with live text previews and license info.',
+  browserRequirements: 'Requires JavaScript and a modern web browser.',
+  isAccessibleForFree: true,
+  featureList: [
+    'Find fonts by image: upload, drag in or paste a screenshot, photo or logo',
+    'AI text recognition and shape matching against 1,900+ Google Fonts',
+    'Preview every match in your own text',
+    'Free alternatives to popular paid fonts',
+    'License summary and download link for every result',
+    'Runs in your browser: images are never uploaded'
+  ],
+  image: `${SITE}/og.png`,
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' }
+});
+
+export const websiteSchema = () => ({
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'Font Finder Tool',
+  alternateName: 'Font Finder',
+  url: SITE
+});
+
+export const organizationSchema = () => ({
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Font Finder Tool',
+  url: SITE,
+  logo: `${SITE}/favicon.svg`,
+  email: 'hello@fontfindertool.com'
 });
 
 export const faqSchema = (items: FaqItem[]) => ({

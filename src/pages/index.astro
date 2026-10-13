@@ -5,24 +5,24 @@ import HowItWorks from '../components/HowItWorks.astro';
 import FeatureGrid from '../components/FeatureGrid.astro';
 import Comparison from '../components/Comparison.astro';
 import Faq from '../components/Faq.astro';
-import CtaBand from '../components/CtaBand.astro';
+import FontFinderGuide from '../components/FontFinderGuide.astro';
 import { homeFaq } from '../data/faq';
-import { faqSchema, webAppSchema } from '../lib/schema';
+import { faqSchema, organizationSchema, webAppSchema, websiteSchema } from '../lib/schema';
 ---
 
 <Layout
-  title="Font Finder Tool — Identify Fonts from Any Image, Free"
-  description="Upload or paste an image to identify the font. Get the closest free Google Fonts, previewed in your own text, with free alternatives to popular paid fonts."
-  schema={[webAppSchema(), faqSchema(homeFaq)]}
+  title="Font Finder | Free AI Font Finder by Image | Font Finder Tool"
+  description="Free font finder: upload an image to identify any font in seconds. AI font finder matching 1,900+ free Google Fonts, previewed in your text. No sign up."
+  schema={[websiteSchema(), organizationSchema(), webAppSchema(), faqSchema(homeFaq)]}
 >
   <PageHero
-    eyebrow="Free font finder"
-    title="Find any font from an image"
-    description="Upload a screenshot, logo or photo. We compare the lettering with 1,900+ free Google Fonts — right in your browser, with no sign-up and no limits."
+    eyebrow="Free AI font finder"
+    title="Font Finder: Spotted a font you love? Find it in seconds."
+    description="Upload a screenshot, logo or photo and our font finder compares the lettering with 1,900+ free Google Fonts, right in your browser, with no sign up and no limits."
   />
   <HowItWorks />
   <FeatureGrid />
   <Comparison />
+  <FontFinderGuide />
   <Faq items={homeFaq} />
-  <CtaBand />
 </Layout>
