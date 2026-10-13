@@ -1,0 +1,18 @@
+---
+interface Props {
+  code: string;
+  title: string;
+  message: string;
+}
+
+const { code, title, message } = Astro.props;
+---
+
+<section class="container-page py-24 text-center sm:py-32">
+  <p class="eyebrow">{code}</p>
+  <h1 class="mt-4 text-[2rem] leading-tight font-semibold tracking-[-0.04em] sm:text-display">{title}</h1>
+  <p class="mx-auto mt-4 max-w-md text-body">{message}</p>
+  <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+    <slot />
+  </div>
+</section>

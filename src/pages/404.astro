@@ -1,12 +1,15 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import ErrorState from '../components/ErrorState.astro';
 ---
 
 <Layout title="Page not found | Font Finder Tool" description="This page doesn't exist." noindex>
-  <section class="container-page py-24 text-center sm:py-32">
-    <p class="eyebrow">404</p>
-    <h1 class="mt-4 text-[2rem] leading-tight font-semibold tracking-[-0.04em] sm:text-display">This page is missing</h1>
-    <p class="mx-auto mt-4 max-w-md text-body">The page you’re looking for doesn’t exist. Maybe the font you’re after does, though.</p>
-    <a href="/" class="btn-pill btn-primary mt-8">Find a font</a>
-  </section>
+  <ErrorState
+    code="404"
+    title="This page is missing"
+    message="The page you’re looking for doesn’t exist. Maybe the font you’re after does, though."
+  >
+    <a href="/" class="btn-pill btn-primary">Find a font</a>
+    <a href="/contact" class="btn-pill btn-ghost">Report a broken link</a>
+  </ErrorState>
 </Layout>
