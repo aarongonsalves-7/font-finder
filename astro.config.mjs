@@ -2,7 +2,6 @@
 import { defineConfig, fontProviders } from 'astro/config';
 
 import tailwindcss from '@tailwindcss/vite';
-import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 // Fully static: font matching runs in the browser against the prebuilt index in public/glyphs.
@@ -12,8 +11,6 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()]
   },
-
-  integrations: [sitemap()],
 
   fonts: [
     {
