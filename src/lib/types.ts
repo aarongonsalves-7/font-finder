@@ -1,44 +1,27 @@
-// Shared between the /api/identify endpoint and the browser detector script.
+// Result shapes used by the browser detector.
 
-export type FontKind = 'free' | 'paid';
-export type Engine = 'whatfontis' | 'gemini' | 'demo';
-
-export interface FreeFontRef {
-  name: string;
-  /** Fontsource woff2 file used for live previews. */
-  previewUrl: string;
-  url: string;
-}
+export type Category = 'sans-serif' | 'serif' | 'display' | 'handwriting' | 'monospace';
 
 export interface FontMatch {
   name: string;
-  kind: FontKind;
-  /** 0–100 when the engine reports confidence, otherwise null. */
-  confidence: number | null;
-  category: string | null;
+  weight: number;
+  category: Category | string;
   /** Short human-readable license summary. */
   license: string;
-  /** Where the font lives (Google Fonts, Fontsource, MyFonts…). */
-  source: string;
+  /** Google Fonts specimen page. */
   url: string;
-  urlLabel: string;
-  /** Free fonts: woff2 for rendering the user's text. */
-  previewUrl: string | null;
-  /** Paid fonts: sample image from the engine, if any. */
-  sampleImage: string | null;
-  /** Free lookalikes (filled for paid matches). */
-  alternatives: FreeFontRef[];
+  /** Fontsource woff2 used for the live preview. */
+  previewUrl: string;
+  /** Closeness relative to the best match, e.g. "Very close". */
+  match: string;
+  /** Well-known commercial fonts this free font resembles. */
+  similarTo: string[];
 }
 
-export interface IdentifyResponse {
-  engine: Engine;
-  /** Text read from the image, if the engine reports it. */
+export interface ScanResult {
+  /** Text read from the image. */
   text: string | null;
+  /** Number of letters compared. */
+  letters: number;
   results: FontMatch[];
-  remaining: number | null;
-}
-
-export interface IdentifyError {
-  error: string;
-  code: 'bad_request' | 'too_large' | 'rate_limited' | 'no_text' | 'unavailable';
 }

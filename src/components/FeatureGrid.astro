@@ -3,8 +3,8 @@ import SectionHeading from './SectionHeading.astro';
 
 const features = [
   {
-    title: 'Free-only filter',
-    body: 'Every match is tagged Free or Paid. One tap hides commercial fonts so you only see what you can use today.',
+    title: 'Every match is free',
+    body: 'Results come from the 1,900+ families on Google Fonts, all open source and licensed for commercial use. Filter them by style in one tap.',
     demo: 'filter'
   },
   {
@@ -13,8 +13,8 @@ const features = [
     demo: 'preview'
   },
   {
-    title: 'Free lookalikes for paid fonts',
-    body: 'Found Helvetica or Gotham? We list close free alternatives like Inter and Montserrat right on the card.',
+    title: 'Free alternatives to paid fonts',
+    body: 'Matches that resemble famous commercial fonts are flagged, so you know Inter can stand in for Helvetica and Montserrat for Gotham.',
     demo: 'alts'
   },
   {
@@ -28,8 +28,8 @@ const features = [
     demo: 'crop'
   },
   {
-    title: 'Private by default',
-    body: 'Images are processed in memory and never stored. Your recent scans stay in your own browser.',
+    title: 'Runs in your browser',
+    body: 'Matching happens on your device. Your image is never uploaded, there are no daily limits, and recent scans stay in your browser.',
     demo: 'private'
   }
 ];
@@ -50,16 +50,16 @@ const features = [
           {f.demo === 'filter' && (
             <span class="inline-flex rounded-pill border border-hairline bg-elevated p-1 text-xs font-medium">
               <span class="rounded-pill px-3 py-1 text-body">All</span>
-              <span class="rounded-pill bg-ink px-3 py-1 text-on-ink">Free</span>
-              <span class="rounded-pill px-3 py-1 text-body">Paid</span>
+              <span class="rounded-pill bg-ink px-3 py-1 text-on-ink">Serif</span>
+              <span class="rounded-pill px-3 py-1 text-body">Script</span>
             </span>
           )}
           {f.demo === 'preview' && <span class="font-serif text-3xl tracking-tight text-ink italic">Hello there</span>}
           {f.demo === 'alts' && (
             <span class="flex flex-wrap justify-center gap-1.5 text-xs">
-              <span class="rounded-pill bg-warning-soft px-2.5 py-1 font-medium text-warning-deep">Gotham</span>
-              <span class="text-mute">→</span>
               <span class="rounded-pill border border-hairline bg-elevated px-2.5 py-1 text-ink">Montserrat</span>
+              <span class="text-mute">≈</span>
+              <span class="rounded-pill bg-warning-soft px-2.5 py-1 font-medium text-warning-deep">Gotham</span>
             </span>
           )}
           {f.demo === 'license' && (

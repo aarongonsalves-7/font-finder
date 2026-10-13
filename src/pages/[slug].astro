@@ -20,7 +20,7 @@ const path = `/${page.slug}`;
   description={page.metaDescription}
   schema={[webAppSchema(`https://fontfindertool.com${path}`), faqSchema(page.faq), breadcrumbSchema(page.breadcrumb, path)]}
 >
-  <PageHero eyebrow={page.eyebrow} title={page.h1} description={page.intro} defaultFilter={page.defaultFilter} />
+  <PageHero eyebrow={page.eyebrow} title={page.h1} description={page.intro} />
 
   <section class="container-page py-12 sm:py-16">
     <div class="grid gap-3 md:grid-cols-2">

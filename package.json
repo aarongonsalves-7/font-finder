@@ -7,24 +7,24 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "catalog": "node scripts/build-font-catalog.mjs",
-    "prebuild": "node scripts/build-font-catalog.mjs",
+    "glyphs": "node scripts/build-glyph-index.mjs",
+    "eval:matcher": "node scripts/eval-matcher.mjs",
     "build": "astro build",
     "preview": "astro preview",
     "deploy": "astro build && wrangler deploy",
-    "astro": "astro",
-    "generate-types": "wrangler types"
+    "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/cloudflare": "^14.3.4",
     "@astrojs/sitemap": "^3.7.4",
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.3.8",
     "tailwindcss": "^4.3.3",
+    "tesseract.js": "^7.0.0",
     "wrangler": "^4.149.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
+    "fontkit": "^2.0.4",
     "typescript": "^6.0.3"
   }
 }

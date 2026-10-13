@@ -5,6 +5,8 @@
 @source not "../../DESIGN.md";
 @source not "../../AGENTS.md";
 @source not "../../CLAUDE.md";
+@source not "../../public/glyphs";
+@source not "../../scripts";
 
 /* Design tokens from DESIGN.md (Geist system: ink on near-white, hairline cards). */
 @theme {

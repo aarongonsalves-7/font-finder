@@ -4,29 +4,29 @@ import ProseLayout from '../layouts/ProseLayout.astro';
 
 <ProseLayout
   title="Privacy Policy — Font Finder Tool"
-  description="How Font Finder Tool handles the images you upload and the data we collect."
+  description="How Font Finder Tool handles your images and data: matching runs on your device and images are never uploaded."
   heading="Privacy Policy"
   updated="October 12, 2026"
 >
   <p>Font Finder Tool (“we”, “us”) runs fontfindertool.com. This page explains what happens to your data when you use the site.</p>
 
-  <h2>Images you upload</h2>
-  <p>When you scan an image, your browser crops and resizes it, then sends it to our server only to identify the font. We <strong>do not store</strong> your images. To identify the font, the image is passed to one of our recognition providers:</p>
-  <ul>
-    <li><a href="https://www.whatfontis.com" rel="noopener">WhatFontIs</a> — font recognition service.</li>
-    <li><a href="https://ai.google.dev" rel="noopener">Google Gemini API</a> — AI image analysis, used as a fallback. Google may process inputs under its own terms.</li>
-  </ul>
-  <p>Please don’t upload images that contain personal or confidential information.</p>
+  <h2>Your images stay on your device</h2>
+  <p>Font matching runs entirely in your browser. When you scan an image, it is cropped, read and compared with our font index on your own device. <strong>Your image is never uploaded</strong> to us or anyone else.</p>
 
-  <h2>Data we keep</h2>
-  <p>To enforce the daily free-scan limit we store a counter keyed by your IP address for about one day. We don’t combine it with other data and it expires automatically.</p>
-  <p>Our host, Cloudflare, may process technical data such as IP address and request logs to deliver and secure the site.</p>
+  <h2>Files your browser downloads</h2>
+  <p>To do the matching, your browser downloads:</p>
+  <ul>
+    <li>the <a href="https://tesseract.projectnaptha.com" rel="noopener">Tesseract.js</a> text-recognition engine and its English language data, from the jsDelivr CDN;</li>
+    <li>parts of our font index, from fontfindertool.com;</li>
+    <li>font files for the previews, from Fontsource via jsDelivr.</li>
+  </ul>
+  <p>Those requests contain standard technical data such as your IP address and browser type, but never your image.</p>
 
   <h2>Data in your browser</h2>
-  <p>Your recent scans (a small thumbnail and the results) are saved in your browser’s local storage so you can reopen them. They never leave your device and you can clear them with the “Clear” button.</p>
+  <p>Your recent scans (a small thumbnail and the results) and your theme choice are saved in your browser’s local storage. They never leave your device, and you can clear recent scans with the “Clear” button.</p>
 
-  <h2>Fonts and third-party content</h2>
-  <p>Font previews load font files from jsDelivr / Fontsource, and sample images may load from WhatFontIs. Those services receive standard request data such as your IP address.</p>
+  <h2>Hosting</h2>
+  <p>The site is hosted on Cloudflare, which may process request logs (such as IP addresses) to deliver and secure the site. We don’t use advertising or tracking cookies.</p>
 
   <h2>Contact</h2>
   <p>Questions about privacy? Email <a href="mailto:hello@fontfindertool.com">hello@fontfindertool.com</a>.</p>

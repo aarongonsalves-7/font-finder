@@ -5,10 +5,9 @@ interface Props {
   eyebrow: string;
   title: string;
   description: string;
-  defaultFilter?: 'all' | 'free' | 'paid';
 }
 
-const { eyebrow, title, description, defaultFilter } = Astro.props;
+const { eyebrow, title, description } = Astro.props;
 ---
 
 <section class="relative isolate overflow-hidden">
@@ -28,13 +27,13 @@ const { eyebrow, title, description, defaultFilter } = Astro.props;
     <p class="mx-auto mt-5 max-w-xl text-base leading-7 text-body sm:text-lg">{description}</p>
 
     <div class="mx-auto mt-10 max-w-4xl">
-      <Detector defaultFilter={defaultFilter} />
+      <Detector />
     </div>
 
     <ul class="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-mute">
-      <li class="flex items-center gap-1.5"><span class="size-1.5 rounded-full bg-link"></span>Free & paid matches</li>
+      <li class="flex items-center gap-1.5"><span class="size-1.5 rounded-full bg-link"></span>1,900+ Google Fonts</li>
       <li class="flex items-center gap-1.5"><span class="size-1.5 rounded-full bg-violet"></span>Crop to the exact text</li>
-      <li class="flex items-center gap-1.5"><span class="size-1.5 rounded-full bg-pink"></span>Images never stored</li>
+      <li class="flex items-center gap-1.5"><span class="size-1.5 rounded-full bg-pink"></span>Runs in your browser</li>
     </ul>
   </div>
 </section>

@@ -1,49 +1,37 @@
 # Font Finder Tool — fontfindertool.com
 
-Identify fonts from an image, with free and paid matches, a one-tap **Free only** filter, live previews in your own text, license summaries and free lookalikes for commercial fonts.
+Identify fonts from an image and get the closest matches from the Google Fonts catalog, previewed in your own text, with license info and notes on which paid fonts each match resembles.
 
-Astro 7 + Tailwind CSS v4, deployed to Cloudflare Workers. Pages are prerendered; only `POST /api/identify` runs on the Worker.
+Astro 7 + Tailwind CSS v4. The site is fully static and needs no API keys: font matching runs entirely in the visitor's browser.
 
-## How detection works
+## How matching works
 
-1. The browser crops/downscales the image and posts it to `/api/identify`.
-2. **WhatFontIs API** (free key: 200 identifications/day) is used first, until `WHATFONTIS_DAILY_CAP` is reached.
-3. **Gemini** (free tier) is the fallback when the quota is used up or WhatFontIs fails.
-4. Results are cross-checked against the Fontsource catalog (`src/data/free-fonts.json`, all Google Fonts + other open fonts) to mark fonts Free/Paid, add licenses, download links and preview files. Paid fonts get free lookalikes from `src/data/paid-alternatives.json`.
-5. Per-IP daily limits (`DAILY_LIMIT`, default 10) are stored in the `RATE_KV` KV namespace. Images are never stored.
+1. The browser crops (and upscales small crops of) the image onto a canvas.
+2. [Tesseract.js](https://github.com/naptha/tesseract.js) reads the text and returns a bounding box for every letter.
+3. Each letter is normalised into a 12×12 shape bitmap plus its width and relative height (`src/lib/glyph-features.ts`). Only the most prominent line is used, so headline + caption images don't mix fonts.
+4. The same features were precomputed for every Google Font (2,400+ styles: weight 400, plus 700 where available) into `public/glyphs/` — one file per character, so the browser downloads only the letters it saw.
+5. `src/lib/matcher.ts` scores every style and the top 12 families are shown. Matches that resemble well-known commercial fonts are tagged using `src/data/paid-lookalikes.json`.
 
-With no API keys, `astro dev` returns demo results so the UI can be tested.
+Images are never uploaded. First scan downloads ~3 MB of OCR language data, the OCR engine, and ~350 KB per distinct letter of index data; the browser caches all of it.
 
-## Setup
-
-```sh
-npm install
-cp .dev.vars.example .dev.vars   # add WHATFONTIS_API_KEY and/or GEMINI_API_KEY
-astro dev --background           # http://localhost:4321
-```
+## Commands
 
 | Command | Action |
 | :-- | :-- |
-| `npm run catalog` | Refresh `src/data/free-fonts.json` from Fontsource (also runs before every build) |
-| `npm run build` | Build to `./dist/` |
-| `npm run preview` | Preview the build in the Workers runtime |
-| `npm run deploy` | Build and deploy with Wrangler |
-| `npm run generate-types` | Regenerate `worker-configuration.d.ts` after editing `wrangler.jsonc` |
+| `astro dev --background` | Dev server at http://localhost:4321 |
+| `npm run build` | Build the static site to `./dist/` |
+| `npm run preview` | Preview the build |
+| `npm run deploy` | Build and deploy to Cloudflare Workers (static assets) |
+| `npm run glyphs` | Rebuild the glyph index from the current Google Fonts catalog (downloads ~2,700 font files into `.cache/`, a few minutes) |
+| `npm run eval:matcher -- --n=150` | Accuracy check: renders sample text in random indexed fonts, degrades it and reports where the true font ranks |
 
-## Deploy
-
-```sh
-npx wrangler login
-npx wrangler secret put WHATFONTIS_API_KEY
-npx wrangler secret put GEMINI_API_KEY
-npm run deploy
-```
-
-Optional overrides (as Worker variables): `GEMINI_MODEL`, `DAILY_LIMIT`, `WHATFONTIS_DAILY_CAP`.
+Current accuracy on synthetic samples (150, blur + JPEG): exact family ranked first ~74%, in the top 10 ~87%. Misses are mostly flowing scripts and heavily decorative fonts that OCR can't read.
 
 ## Structure
 
 - `src/components/Detector.astro` + `src/scripts/detector.ts` — upload / paste / crop / results UI
-- `src/pages/api/identify.ts` — detection endpoint; engines in `src/lib/`
+- `src/scripts/scan.ts` — OCR + index loading + ranking in the browser
+- `src/lib/glyph-features.ts`, `src/lib/matcher.ts` — shared feature extraction and scoring (also used by the Node scripts)
+- `scripts/build-glyph-index.mjs`, `scripts/eval-matcher.mjs` — index builder and accuracy check
 - `src/pages/[slug].astro` + `src/data/landing.ts` — SEO landing pages
-- `src/styles/global.css` — design tokens from `DESIGN.md`
+- `src/styles/global.css` — design tokens from `DESIGN.md` (light + dark)

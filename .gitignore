@@ -23,9 +23,11 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 
-# cloudflare
-.dev.vars
+# local caches
+.cache/
 .wrangler/
+# Tesseract language data cached by scripts/eval-matcher.mjs
+*.traineddata
 
 # Tailwind docs snapshot (source-available, keep local)
 .agents/skills/tailwind-4-docs/references/docs/

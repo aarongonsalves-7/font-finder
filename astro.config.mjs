@@ -1,11 +1,11 @@
 // @ts-check
-import { defineConfig, envField, fontProviders } from 'astro/config';
+import { defineConfig, fontProviders } from 'astro/config';
 
 import tailwindcss from '@tailwindcss/vite';
-import cloudflare from '@astrojs/cloudflare';
 import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
+// Fully static: font matching runs in the browser against the prebuilt index in public/glyphs.
 export default defineConfig({
   site: 'https://fontfindertool.com',
 
@@ -13,7 +13,6 @@ export default defineConfig({
     plugins: [tailwindcss()]
   },
 
-  adapter: cloudflare({ imageService: 'passthrough' }),
   integrations: [sitemap()],
 
   fonts: [
@@ -33,17 +32,5 @@ export default defineConfig({
       styles: ['normal'],
       fallbacks: ['ui-monospace', 'monospace']
     }
-  ],
-
-  env: {
-    schema: {
-      WHATFONTIS_API_KEY: envField.string({ context: 'server', access: 'secret', optional: true }),
-      GEMINI_API_KEY: envField.string({ context: 'server', access: 'secret', optional: true }),
-      GEMINI_MODEL: envField.string({ context: 'server', access: 'public', default: 'gemini-3-flash-preview' }),
-      // Scans allowed per visitor IP per UTC day.
-      DAILY_LIMIT: envField.number({ context: 'server', access: 'public', default: 10 }),
-      // WhatFontIs free keys allow 200/day; keep a margin before switching to Gemini.
-      WHATFONTIS_DAILY_CAP: envField.number({ context: 'server', access: 'public', default: 190 })
-    }
-  }
+  ]
 });

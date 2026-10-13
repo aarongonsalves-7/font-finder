@@ -9,7 +9,6 @@ export interface LandingPage {
   eyebrow: string;
   h1: string;
   intro: string;
-  defaultFilter?: 'all' | 'free' | 'paid';
   sections: { heading: string; body: string[] }[];
   faq: FaqItem[];
 }
@@ -19,7 +18,7 @@ export const landingPages: LandingPage[] = [
     slug: 'what-font-is-this',
     metaTitle: 'What Font Is This? Identify a Font from a Picture — Font Finder Tool',
     metaDescription:
-      'Wondering “what font is this?” Upload a picture or screenshot and get the closest free and paid fonts, previewed in your own text.',
+      'Wondering “what font is this?” Upload a picture or screenshot and get the closest free Google Fonts, previewed in your own text.',
     breadcrumb: 'What font is this?',
     eyebrow: 'What font is this?',
     h1: 'What font is this? Find out from a picture',
@@ -28,14 +27,14 @@ export const landingPages: LandingPage[] = [
       {
         heading: 'Answer “what font is this?” in three steps',
         body: [
-          'Upload or paste your image, drag a box around the words, and press Identify font. We compare the shapes of each letter — stroke contrast, terminals, x-height and spacing — against hundreds of thousands of typefaces.',
+          'Upload or paste your image, drag a box around the words, and press Identify font. We compare the shape and proportions of each letter — stroke weight, x-height, width and detail — against every font on Google Fonts.',
           'Every result is rendered in your own text so you can check the details that tell similar fonts apart: the tail of the “g”, the leg of the “R”, the shape of the numerals.'
         ]
       },
       {
         heading: 'Where the font usually comes from',
         body: [
-          'Websites and apps often use free Google Fonts like Inter, Roboto and Montserrat. Print, packaging and brand work more often use commercial families like Helvetica Neue, Gotham or Futura. Results show which is which, with links to download or buy.'
+          'Websites and apps often use free Google Fonts like Inter, Roboto and Montserrat — those you can match exactly. Print, packaging and brand work more often use commercial families like Helvetica Neue, Gotham or Futura; for those you get the closest free alternatives, and cards note which paid fonts they resemble.'
         ]
       }
     ],
@@ -54,12 +53,11 @@ export const landingPages: LandingPage[] = [
     slug: 'free-font-finder',
     metaTitle: 'Free Font Finder — Find Free Fonts from an Image | Font Finder Tool',
     metaDescription:
-      'Find free fonts from any image. Results are filtered to free, commercial-use-friendly fonts, with free lookalikes for every paid match.',
+      'Find free fonts from any image. Every match is a free Google Font licensed for commercial use, with free alternatives to popular paid fonts.',
     breadcrumb: 'Free font finder',
     eyebrow: 'Free font finder',
     h1: 'Find free fonts that match any image',
-    intro: 'Results open on the Free filter, so you only see fonts you can download and use today — plus free lookalikes for anything commercial.',
-    defaultFilter: 'free',
+    intro: 'Every result is a free, open-source Google Font you can download and use today — including in commercial work.',
     sections: [
       {
         heading: 'Free fonts you can actually use',
@@ -69,9 +67,9 @@ export const landingPages: LandingPage[] = [
         ]
       },
       {
-        heading: 'When the exact font is paid',
+        heading: 'When the original font is paid',
         body: [
-          'If the original is a commercial typeface, switch to the Paid tab to see it — every paid card lists close free alternatives. Helvetica maps to Inter or Arimo, Gotham to Montserrat, Futura to Jost, and many more.'
+          'If the image uses a commercial typeface, you get the closest free fonts instead. Cards flag well-known paid fonts they resemble — Inter or Arimo for Helvetica, Montserrat for Gotham, Jost for Futura, and many more.'
         ]
       }
     ],
@@ -81,8 +79,8 @@ export const landingPages: LandingPage[] = [
         a: 'Yes. Google Fonts are released under open licenses (mostly OFL) that allow commercial use, modification and embedding.'
       },
       {
-        q: 'What if there is no free match?',
-        a: 'Switch to All or Paid. Every paid result includes free lookalikes chosen for similar proportions and letter shapes.'
+        q: 'What if the font in my image is a paid font?',
+        a: 'You will see the most similar free Google Fonts. They will not be identical, but they are chosen by comparing the actual letter shapes, so they are the closest free stand-ins.'
       }
     ]
   },
@@ -90,7 +88,7 @@ export const landingPages: LandingPage[] = [
     slug: 'logo-font-finder',
     metaTitle: 'Logo Font Finder — Identify the Font in Any Logo | Font Finder Tool',
     metaDescription:
-      'Find the font used in a logo. Upload the logo, crop the wordmark and get matching free and paid fonts with license details.',
+      'Find the font used in a logo. Upload the logo, crop the wordmark and get the closest free Google Fonts with license details.',
     breadcrumb: 'Logo font finder',
     eyebrow: 'Logo font finder',
     h1: 'Identify the font in any logo',
@@ -130,7 +128,6 @@ export const landingPages: LandingPage[] = [
     eyebrow: 'Google Font finder',
     h1: 'Find the Google Font in any image',
     intro: 'Upload a screenshot of a website, app or slide and get the matching Google Fonts — previewed in your text, one click from download.',
-    defaultFilter: 'free',
     sections: [
       {
         heading: 'Search 1,900+ Google Fonts by image',
@@ -153,7 +150,7 @@ export const landingPages: LandingPage[] = [
       },
       {
         q: 'Does this find fonts that are not on Google Fonts?',
-        a: 'Yes. Switch to the All or Paid tab to see commercial fonts and other free fonts as well.'
+        a: 'No — matches always come from Google Fonts, so they are free to use. For commercial fonts you get the closest free alternatives.'
       }
     ]
   }

@@ -1,13 +1,8 @@
 ---
-interface Props {
-  /** Preselected results filter, e.g. "free" on the free-font landing page. */
-  defaultFilter?: 'all' | 'free' | 'paid';
-}
-
-const { defaultFilter = 'all' } = Astro.props;
+// Font identification runs entirely in the browser (src/scripts/scan.ts).
 ---
 
-<div id="detector" data-detector data-default-filter={defaultFilter} class="scroll-mt-24">
+<div id="detector" data-detector class="scroll-mt-24">
   <div class="card overflow-hidden text-left shadow-floating">
     <!-- 1. Upload -->
     <div data-view="upload" class="p-3 sm:p-4">
@@ -23,7 +18,7 @@ const { defaultFilter = 'all' } = Astro.props;
         </span>
         <span>
           <span class="block text-base font-medium text-ink">Drop an image, paste it, or <span class="text-link group-hover:underline">browse</span></span>
-          <span class="mt-1 block text-sm text-mute">Screenshots, logos, posters, photos · PNG, JPG or WebP</span>
+          <span class="mt-1 block text-sm text-mute">Screenshots, logos, posters, photos · processed on your device</span>
         </span>
         <span class="flex flex-wrap items-center justify-center gap-2 text-xs text-mute">
           <kbd class="rounded-sm border border-hairline bg-elevated px-1.5 py-0.5 font-mono">Ctrl</kbd>+<kbd class="rounded-sm border border-hairline bg-elevated px-1.5 py-0.5 font-mono">V</kbd>
@@ -77,11 +72,7 @@ const { defaultFilter = 'all' } = Astro.props;
       </div>
 
       <div class="flex flex-col gap-3 border-b border-hairline bg-canvas px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
-        <div role="radiogroup" aria-label="Filter results" class="inline-flex w-full rounded-pill border border-hairline bg-elevated p-1 sm:w-auto">
-          <button type="button" role="radio" data-filter="all" class="flex-1 rounded-pill px-4 py-1.5 text-sm font-medium text-body transition-colors aria-checked:bg-ink aria-checked:text-on-ink sm:flex-none">All <span data-count="all" class="tabular-nums opacity-60"></span></button>
-          <button type="button" role="radio" data-filter="free" class="flex-1 rounded-pill px-4 py-1.5 text-sm font-medium text-body transition-colors aria-checked:bg-ink aria-checked:text-on-ink sm:flex-none">Free <span data-count="free" class="tabular-nums opacity-60"></span></button>
-          <button type="button" role="radio" data-filter="paid" class="flex-1 rounded-pill px-4 py-1.5 text-sm font-medium text-body transition-colors aria-checked:bg-ink aria-checked:text-on-ink sm:flex-none">Paid <span data-count="paid" class="tabular-nums opacity-60"></span></button>
-        </div>
+        <div data-filters role="radiogroup" aria-label="Filter by style" class="inline-flex w-full overflow-x-auto rounded-pill border border-hairline bg-elevated p-1 sm:w-auto"></div>
         <label class="flex items-center gap-2 text-sm text-mute">
           <span class="shrink-0">Preview text</span>
           <input data-preview-input type="text" maxlength="60" class="h-9 w-full min-w-0 rounded-sm border border-hairline bg-elevated px-3 text-sm text-ink placeholder:text-faint sm:w-64" placeholder="Type to preview" />
@@ -89,8 +80,9 @@ const { defaultFilter = 'all' } = Astro.props;
       </div>
 
       <ul data-results class="grid gap-3 p-3 sm:grid-cols-2 sm:p-4" aria-live="polite"></ul>
-      <p data-empty class="px-5 pb-8 pt-4 text-center text-sm text-mute" hidden></p>
-      <p data-attribution class="border-t border-hairline px-5 py-3 text-xs text-mute" hidden></p>
+      <p class="border-t border-hairline px-5 py-3 text-xs text-mute">
+        Matched on your device against the Google Fonts catalog. Text read with Tesseract.js. Your image never leaves your browser.
+      </p>
     </div>
 
     <div data-error role="alert" class="mx-3 mb-3 rounded-sm border border-error/30 bg-error/5 px-4 py-3 text-sm text-error-deep sm:mx-4 sm:mb-4" hidden></div>
@@ -113,23 +105,22 @@ const { defaultFilter = 'all' } = Astro.props;
           <h3 class="mt-0.5 truncate text-heading-md" data-name></h3>
           <p class="mt-0.5 text-xs text-mute" data-meta></p>
         </div>
-        <span data-badge class="shrink-0 rounded-pill px-2.5 py-1 text-xs font-medium"></span>
+        <span class="shrink-0 rounded-pill bg-link-soft px-2.5 py-1 text-xs font-medium text-link-deep">Free</span>
       </div>
 
       <div class="flex min-h-24 items-center overflow-hidden rounded-sm border border-hairline-soft bg-canvas px-4 py-3">
         <p data-preview class="w-full break-words text-3xl leading-tight text-ink transition-opacity"></p>
-        <img data-sample alt="" class="max-h-20 w-full object-contain object-left dark:invert" loading="lazy" hidden />
       </div>
 
       <p data-license class="text-xs text-body"></p>
 
-      <div data-alts hidden>
-        <p class="eyebrow">Free lookalikes</p>
-        <ul data-alts-list class="mt-2 flex flex-wrap gap-2"></ul>
+      <div data-similar hidden>
+        <p class="eyebrow">Free alternative to</p>
+        <ul data-similar-list class="mt-2 flex flex-wrap gap-1.5" aria-label="Similar commercial fonts"></ul>
       </div>
 
       <div class="mt-auto flex gap-2">
-        <a data-link class="btn-square btn-primary flex-1" target="_blank" rel="noopener"></a>
+        <a data-link class="btn-square btn-primary flex-1" target="_blank" rel="noopener">Get on Google Fonts</a>
         <button type="button" data-copy class="btn-square btn-ghost">Copy name</button>
       </div>
     </li>

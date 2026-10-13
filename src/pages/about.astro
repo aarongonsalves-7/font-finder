@@ -8,10 +8,10 @@ import ProseLayout from '../layouts/ProseLayout.astro';
   heading="About Font Finder Tool"
 >
   <p>Font Finder Tool started with a simple frustration: font identifiers tell you a name, then leave you to work out whether you can afford it, whether you’re allowed to use it, and what it actually looks like with your words.</p>
-  <p>So we built a finder that goes the whole way. Every result is marked <strong>Free</strong> or <strong>Paid</strong>, previewed in your own text, and comes with a license summary and a direct link. When the exact font is commercial, we suggest free lookalikes you can use straight away.</p>
+  <p>So we built a finder that only returns fonts you can actually use. Every result is a free, open-source Google Font, previewed in your own text, with its license and a direct download link. When your image uses a commercial font, you get the closest free stand-ins — and cards note which paid fonts they resemble.</p>
 
   <h2>How matching works</h2>
-  <p>Images are matched by specialised font-recognition services and AI image analysis, then cross-checked against the open-source catalog from <a href="https://fontsource.org" rel="noopener">Fontsource</a> (which includes all of Google Fonts) to confirm which matches are free and how they’re licensed.</p>
+  <p>Everything runs in your browser. <a href="https://tesseract.projectnaptha.com" rel="noopener">Tesseract.js</a> reads the letters in your crop, then each letter’s shape and proportions are compared with a prebuilt index of every font on <a href="https://fonts.google.com" rel="noopener">Google Fonts</a> (served via <a href="https://fontsource.org" rel="noopener">Fontsource</a>). Your image is never uploaded.</p>
 
   <h2>Get in touch</h2>
   <p>Found a wrong match, or want a feature? Email <a href="mailto:hello@fontfindertool.com">hello@fontfindertool.com</a>.</p>

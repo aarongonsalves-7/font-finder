@@ -1,32 +1,22 @@
-import type { FontMatch, FreeFontRef, IdentifyError, IdentifyResponse } from '../lib/types';
+import { CATEGORY_LABELS, weightLabel } from '../lib/fonts';
+import type { FontMatch, ScanResult } from '../lib/types';
+import { scanCanvas, warmUp } from './scan';
 
 type View = 'upload' | 'crop' | 'loading' | 'results';
-type Filter = 'all' | 'free' | 'paid';
 
 interface HistoryEntry {
   at: number;
   thumb: string;
-  response: IdentifyResponse;
+  result: ScanResult;
 }
 
-const MAX_SIDE = 1600;
 const MAX_FILE_BYTES = 15 * 1024 * 1024;
-const HISTORY_KEY = 'fft:history';
+const HISTORY_KEY = 'fft:history:v3';
 const HISTORY_SIZE = 6;
 const DEFAULT_PREVIEW = 'The quick brown fox jumps';
 
-const LOADING_STEPS = ['Reading the letters…', 'Comparing letterforms…', 'Checking free and paid catalogs…', 'Ranking the closest matches…'];
-
-const BADGE_CLASSES: Record<FontMatch['kind'], string> = {
-  free: 'bg-link-soft text-link-deep',
-  paid: 'bg-warning-soft text-warning-deep'
-};
-
-const ENGINE_LABEL: Record<IdentifyResponse['engine'], string> = {
-  whatfontis: 'Matched against 990K+ fonts by WhatFontIs',
-  gemini: 'Matched by AI typeface analysis',
-  demo: 'Demo results (no API keys configured)'
-};
+const FILTER_CLASS =
+  'flex-1 rounded-pill px-3.5 py-1.5 text-sm font-medium whitespace-nowrap text-body transition-colors aria-checked:bg-ink aria-checked:text-on-ink sm:flex-none';
 
 // ---------- font preview loading ----------
 
@@ -95,18 +85,23 @@ interface Rect {
   h: number;
 }
 
-/** Crop (natural pixels) and downscale to a JPEG data URL on a white background. */
-function renderCrop(img: HTMLImageElement, crop: Rect | null, maxSide: number, quality = 0.92): string {
+/**
+ * Crop (natural pixels) onto a white canvas. Small crops are upscaled so letters are big
+ * enough for OCR; same rule as scripts/eval-matcher.mjs.
+ */
+function renderCrop(img: HTMLImageElement, crop: Rect | null, target: 'scan' | 'thumb'): HTMLCanvasElement {
   const src = crop ?? { x: 0, y: 0, w: img.naturalWidth, h: img.naturalHeight };
-  const scale = Math.min(1, maxSide / Math.max(src.w, src.h));
+  const longest = Math.max(src.w, src.h);
+  const scale = target === 'thumb' ? Math.min(1, 240 / longest) : Math.min(4, Math.max(1200 / longest, Math.min(1, 2400 / longest)));
   const canvas = document.createElement('canvas');
   canvas.width = Math.max(1, Math.round(src.w * scale));
   canvas.height = Math.max(1, Math.round(src.h * scale));
-  const ctx = canvas.getContext('2d')!;
+  const ctx = canvas.getContext('2d', { willReadFrequently: target === 'scan' })!;
   ctx.fillStyle = '#fff';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.imageSmoothingQuality = 'high';
   ctx.drawImage(img, src.x, src.y, src.w, src.h, 0, 0, canvas.width, canvas.height);
-  return canvas.toDataURL('image/jpeg', quality);
+  return canvas;
 }
 
 // ---------- storage (best effort) ----------
@@ -143,8 +138,8 @@ export function initDetector(root: HTMLElement) {
   const scanBtn = $<HTMLButtonElement>('[data-scan]');
   const loadingText = $('[data-loading-text]');
   const errorBox = $('[data-error]');
+  const filterGroup = $('[data-filters]');
   const resultsList = $('[data-results]');
-  const emptyMsg = $('[data-empty]');
   const previewInput = $<HTMLInputElement>('[data-preview-input]');
   const template = $<HTMLTemplateElement>('[data-card-template]');
   const historyBox = $('[data-history]');
@@ -153,10 +148,9 @@ export function initDetector(root: HTMLElement) {
   let image: HTMLImageElement | null = null;
   let objectUrl: string | null = null;
   let crop: Rect | null = null; // natural pixels
-  let current: IdentifyResponse | null = null;
-  let filter = (root.dataset.defaultFilter as Filter) || 'all';
+  let current: ScanResult | null = null;
+  let filter = 'all';
   let previewText = DEFAULT_PREVIEW;
-  let loadingTimer: number | undefined;
 
   function show(view: View) {
     for (const [name, el] of Object.entries(views)) el.hidden = name !== view;
@@ -174,6 +168,7 @@ export function initDetector(root: HTMLElement) {
     if (!file.type.startsWith('image/')) return showError('That file is not an image. Try a PNG, JPG or WebP.');
     if (file.size > MAX_FILE_BYTES) return showError('That image is over 15 MB. Try a screenshot or a smaller export.');
     showError(null);
+    warmUp(); // fetch the OCR engine while the user crops
 
     if (objectUrl) URL.revokeObjectURL(objectUrl);
     objectUrl = URL.createObjectURL(file);
@@ -269,42 +264,22 @@ export function initDetector(root: HTMLElement) {
 
   // ----- scan -----
 
-  function startLoading() {
-    show('loading');
-    let step = 0;
-    loadingText.textContent = LOADING_STEPS[0];
-    loadingTimer = window.setInterval(() => {
-      step = Math.min(step + 1, LOADING_STEPS.length - 1);
-      loadingText.textContent = LOADING_STEPS[step];
-    }, 2200);
-  }
-
   scanBtn.addEventListener('click', async () => {
     if (!image) return;
     showError(null);
-    const dataUrl = renderCrop(image, crop, MAX_SIDE);
-    const thumb = renderCrop(image, crop, 240, 0.7);
-    startLoading();
+    const canvas = renderCrop(image, crop, 'scan');
+    const thumb = renderCrop(image, crop, 'thumb').toDataURL('image/jpeg', 0.7);
+    show('loading');
 
     try {
-      const res = await fetch('/api/identify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: dataUrl.split(',')[1], mimeType: 'image/jpeg' })
-      });
-      const body = (await res.json().catch(() => null)) as IdentifyResponse | IdentifyError | null;
-      if (!res.ok || !body || 'error' in body) {
-        throw new Error(body && 'error' in body ? body.error : 'Something went wrong. Please try again.');
-      }
-
-      writeHistory([{ at: Date.now(), thumb, response: body }, ...readHistory()]);
+      const result = await scanCanvas(canvas, (message) => (loadingText.textContent = message));
+      writeHistory([{ at: Date.now(), thumb, result }, ...readHistory()]);
       renderHistory();
-      showResults(body, thumb);
+      showResults(result, thumb);
     } catch (err) {
+      console.error(err);
       show('crop');
-      showError((err as Error).message);
-    } finally {
-      clearInterval(loadingTimer);
+      showError((err as Error).message || 'Something went wrong. Please try again.');
     }
   });
 
@@ -320,57 +295,58 @@ export function initDetector(root: HTMLElement) {
 
   // ----- results -----
 
-  function showResults(response: IdentifyResponse, thumb: string) {
-    current = response;
-    previewText = response.text || previewInput.value.trim() || DEFAULT_PREVIEW;
+  function showResults(result: ScanResult, thumb: string) {
+    current = result;
+    filter = 'all';
+    previewText = result.text || previewInput.value.trim() || DEFAULT_PREVIEW;
     previewInput.value = previewText === DEFAULT_PREVIEW ? '' : previewText;
     $<HTMLImageElement>('[data-result-thumb]').src = thumb;
 
-    const free = response.results.filter((r) => r.kind === 'free').length;
-    const counts = { all: response.results.length, free, paid: response.results.length - free };
-    for (const key of Object.keys(counts) as Filter[]) $(`[data-count="${key}"]`).textContent = String(counts[key]);
+    const n = result.results.length;
+    $('[data-result-title]').textContent = `${n} free font ${n === 1 ? 'match' : 'matches'}`;
+    $('[data-result-meta]').textContent = `${result.letters} letters compared${result.text ? ` · read “${result.text}”` : ''}`;
 
-    $('[data-result-title]').textContent = `${counts.all} font ${counts.all === 1 ? 'match' : 'matches'}`;
-    const remaining = response.remaining === null ? '' : ` · ${response.remaining} free scans left today`;
-    $('[data-result-meta]').textContent = `${counts.free} free · ${counts.paid} paid${remaining}`;
-
-    const attribution = $('[data-attribution]');
-    attribution.hidden = false;
-    attribution.innerHTML = '';
-    attribution.append(ENGINE_LABEL[response.engine] + '. ');
-    if (response.engine === 'whatfontis') {
-      const a = Object.assign(document.createElement('a'), {
-        href: 'https://www.whatfontis.com',
-        textContent: 'WhatFontIs.com',
-        rel: 'noopener',
-        className: 'underline underline-offset-2 hover:text-ink'
-      });
-      attribution.append('Font data by ');
-      attribution.appendChild(a);
-      attribution.append('. ');
-    }
-    attribution.append('Always confirm the license before commercial use.');
-
+    renderFilters();
     renderList();
     show('results');
     $('[data-result-title]').focus({ preventScroll: true });
     root.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
+  function renderFilters() {
+    if (!current) return;
+    const counts = new Map<string, number>();
+    for (const r of current.results) counts.set(r.category, (counts.get(r.category) ?? 0) + 1);
+    const options = [['all', 'All', current.results.length] as const, ...[...counts].map(([c, n]) => [c, CATEGORY_LABELS[c] ?? c, n] as const)];
+
+    filterGroup.replaceChildren(
+      ...options.map(([value, label, count]) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.setAttribute('role', 'radio');
+        btn.dataset.filter = value;
+        btn.className = FILTER_CLASS;
+        btn.append(`${label} `);
+        const c = document.createElement('span');
+        c.className = 'tabular-nums opacity-60';
+        c.textContent = String(count);
+        btn.appendChild(c);
+        btn.addEventListener('click', () => {
+          filter = value;
+          renderList();
+        });
+        return btn;
+      })
+    );
+    // Hide the bar when every match is the same style.
+    filterGroup.hidden = options.length <= 2;
+  }
+
   function renderList() {
     if (!current) return;
     for (const btn of $$('[data-filter]')) btn.setAttribute('aria-checked', String(btn.dataset.filter === filter));
-
-    const items = current.results.filter((r) => filter === 'all' || r.kind === filter);
+    const items = current.results.filter((r) => filter === 'all' || r.category === filter);
     resultsList.replaceChildren(...items.map((r) => renderCard(r, current!.results.indexOf(r) + 1)));
-
-    emptyMsg.hidden = items.length > 0;
-    if (!items.length) {
-      emptyMsg.textContent =
-        filter === 'free'
-          ? 'No exact free match — switch to Paid to see the free lookalikes listed under each paid font.'
-          : 'No paid fonts in these results. Every match is free to use.';
-    }
   }
 
   function renderCard(r: FontMatch, rank: number): HTMLElement {
@@ -380,72 +356,34 @@ export function initDetector(root: HTMLElement) {
     q('[data-rank]').textContent = `#${String(rank).padStart(2, '0')}`;
     q('[data-name]').textContent = r.name;
     q('[data-name]').title = r.name;
-    q('[data-meta]').textContent = [r.source, r.category, r.confidence !== null ? `${r.confidence}% match` : null]
-      .filter(Boolean)
-      .join(' · ');
-
-    const badge = q('[data-badge]');
-    badge.textContent = r.kind === 'free' ? 'Free' : 'Paid';
-    badge.className += ` ${BADGE_CLASSES[r.kind]}`;
+    q('[data-meta]').textContent = [CATEGORY_LABELS[r.category] ?? r.category, weightLabel(r.weight), r.match].join(' · ');
 
     const preview = q('[data-preview]');
-    const sample = q<HTMLImageElement>('[data-sample]');
-    if (r.previewUrl) {
-      preview.textContent = previewText;
-      preview.dataset.previewText = '';
-      previewFont(preview, r.previewUrl);
-    } else if (r.sampleImage) {
-      preview.hidden = true;
-      sample.hidden = false;
-      sample.src = r.sampleImage;
-      sample.alt = `${r.name} sample`;
-    } else {
-      preview.textContent = 'Commercial font · compare with the free lookalikes below';
-      preview.className = 'w-full text-sm text-mute';
-    }
+    preview.textContent = previewText;
+    previewFont(preview, r.previewUrl);
 
     q('[data-license]').textContent = r.license;
 
-    if (r.alternatives.length) {
-      q('[data-alts]').hidden = false;
-      const altsList = q('[data-alts-list]');
-      for (const alt of r.alternatives) altsList.appendChild(renderAlternative(alt));
+    if (r.similarTo.length) {
+      q('[data-similar]').hidden = false;
+      const list = q('[data-similar-list]');
+      for (const name of r.similarTo) {
+        const chip = document.createElement('li');
+        chip.className = 'rounded-pill bg-warning-soft px-2.5 py-1 text-xs font-medium text-warning-deep';
+        chip.textContent = name;
+        list.appendChild(chip);
+      }
     }
 
-    const link = q<HTMLAnchorElement>('[data-link]');
-    link.href = r.url;
-    link.textContent = r.urlLabel;
-
+    q<HTMLAnchorElement>('[data-link]').href = r.url;
     const copy = q<HTMLButtonElement>('[data-copy]');
     copy.addEventListener('click', () => copyText(r.name, copy));
     return li;
   }
 
-  function renderAlternative(alt: FreeFontRef) {
-    const li = document.createElement('li');
-    const a = Object.assign(document.createElement('a'), {
-      href: alt.url,
-      target: '_blank',
-      rel: 'noopener',
-      textContent: alt.name,
-      title: `${alt.name} — free download`,
-      className: 'inline-flex h-8 items-center rounded-pill border border-hairline bg-elevated px-3 text-sm text-ink transition-colors hover:border-faint'
-    });
-    previewFont(a, alt.previewUrl);
-    li.appendChild(a);
-    return li;
-  }
-
-  for (const btn of $$('[data-filter]')) {
-    btn.addEventListener('click', () => {
-      filter = btn.dataset.filter as Filter;
-      renderList();
-    });
-  }
-
   previewInput.addEventListener('input', () => {
     previewText = previewInput.value.trim() || current?.text || DEFAULT_PREVIEW;
-    for (const el of $$('[data-preview-text]')) el.textContent = previewText;
+    for (const el of $$('[data-preview]')) el.textContent = previewText;
   });
 
   async function copyText(text: string, button: HTMLButtonElement) {
@@ -461,9 +399,7 @@ export function initDetector(root: HTMLElement) {
 
   $<HTMLButtonElement>('[data-copy-all]').addEventListener('click', (e) => {
     if (!current) return;
-    const lines = current.results.map(
-      (r, i) => `${i + 1}. ${r.name} (${r.kind === 'free' ? 'Free' : 'Paid'}) — ${r.url}`
-    );
+    const lines = current.results.map((r, i) => `${i + 1}. ${r.name} — ${r.url}`);
     copyText(`Font matches from fontfindertool.com\n${lines.join('\n')}`, e.currentTarget as HTMLButtonElement);
   });
 
@@ -485,10 +421,10 @@ export function initDetector(root: HTMLElement) {
         });
         const label = document.createElement('span');
         label.className = 'truncate px-1 text-xs text-body';
-        label.textContent = entry.response.results[0]?.name ?? 'Scan';
+        label.textContent = entry.result.results[0]?.name ?? 'Scan';
         btn.appendChild(img);
         btn.appendChild(label);
-        btn.addEventListener('click', () => showResults(entry.response, entry.thumb));
+        btn.addEventListener('click', () => showResults(entry.result, entry.thumb));
         li.appendChild(btn);
         return li;
       })

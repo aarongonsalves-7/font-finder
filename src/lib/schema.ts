@@ -9,7 +9,7 @@ export const webAppSchema = (url = SITE) => ({
   url,
   applicationCategory: 'DesignApplication',
   operatingSystem: 'Any',
-  description: 'Identify fonts from images and get free and paid matches with live previews and license info.',
+  description: 'Identify fonts from images and find matching free Google Fonts, with live previews and license info.',
   offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' }
 });
 
