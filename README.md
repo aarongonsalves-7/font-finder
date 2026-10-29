@@ -18,7 +18,7 @@ Images are never uploaded. First scan downloads ~3 MB of OCR language data, the 
 
 | Command | Action |
 | :-- | :-- |
-| `astro dev --background` | Dev server at http://localhost:4321 |
+| `astro dev --background` | Site deployed at fontfindertool.com |
 | `npm run build` | Build the Worker (`./dist/server/`) and static assets (`./dist/client/`) |
 | `npm run preview` | Preview the build in the local Workers runtime (`workerd`) |
 | `npm run deploy` | Build and deploy the Worker to Cloudflare |
