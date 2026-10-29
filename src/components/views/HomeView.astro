@@ -3,7 +3,6 @@ import Layout from '../../layouts/Layout.astro';
 import PageHero from '../PageHero.astro';
 import HowItWorks from '../HowItWorks.astro';
 import FeatureGrid from '../FeatureGrid.astro';
-import Comparison from '../Comparison.astro';
 import Faq from '../Faq.astro';
 import FontFinderGuide from '../FontFinderGuide.astro';
 import { getLangFromUrl, useContent } from '../../i18n/utils';
@@ -22,7 +21,6 @@ const { home, homeFaq } = useContent(lang);
   <PageHero eyebrow={home.eyebrow} title={home.h1} description={home.intro} />
   <HowItWorks />
   <FeatureGrid />
-  <Comparison />
   <FontFinderGuide />
   <Faq items={homeFaq} />
 </Layout>

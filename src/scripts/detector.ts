@@ -12,6 +12,9 @@ interface HistoryEntry {
 const MAX_FILE_BYTES = 15 * 1024 * 1024;
 const HISTORY_KEY = 'fft:history:v3';
 const HISTORY_SIZE = 6;
+const HISTORY_CONSENT = 'fft:history-enabled';
+const safeFontUrl = (value: string) => /^https:\/\/cdn\.jsdelivr\.net\/fontsource\/fonts\/[a-z0-9-]+@[^/]+\/latin-\d+-normal\.woff2$/.test(value);
+const safeSpecimenUrl = (value: string) => value.startsWith('https://fonts.google.com/specimen/');
 
 // Scans saved before the site was translated hold English labels instead of ids.
 const LEGACY_MATCH: Record<string, keyof ClientStrings['match']> = {
@@ -114,7 +117,10 @@ function renderCrop(img: HTMLImageElement, crop: Rect | null, target: 'scan' | '
 
 function readHistory(): HistoryEntry[] {
   try {
-    return JSON.parse(localStorage.getItem(HISTORY_KEY) ?? '[]');
+    if (localStorage.getItem(HISTORY_CONSENT) !== 'yes') return [];
+    const entries = JSON.parse(localStorage.getItem(HISTORY_KEY) ?? '[]');
+    if (!Array.isArray(entries)) return [];
+    return entries.slice(0, HISTORY_SIZE).filter((e) => e && typeof e.at === 'number' && Date.now() - e.at < 30 * 86400000 && typeof e.thumb === 'string' && e.thumb.startsWith('data:image/jpeg;base64,') && e.result && Array.isArray(e.result.results) && e.result.results.every((r: FontMatch) => r && typeof r.name === 'string' && typeof r.license === 'string' && Array.isArray(r.similarTo) && safeFontUrl(r.previewUrl) && safeSpecimenUrl(r.url)));
   } catch {
     return [];
   }
@@ -122,6 +128,7 @@ function readHistory(): HistoryEntry[] {
 
 function writeHistory(entries: HistoryEntry[]) {
   try {
+    if (localStorage.getItem(HISTORY_CONSENT) !== 'yes') return;
     localStorage.setItem(HISTORY_KEY, JSON.stringify(entries.slice(0, HISTORY_SIZE)));
   } catch {
     // Storage full or blocked; history is optional.
@@ -181,7 +188,7 @@ export function initDetector(root: HTMLElement) {
 
   async function acceptFile(file: File | undefined | null) {
     if (!file) return;
-    if (!file.type.startsWith('image/')) return showError(strings.notImage);
+    if (!['image/png', 'image/jpeg', 'image/webp', 'image/gif', 'image/bmp'].includes(file.type)) return showError(strings.notImage);
     if (file.size > MAX_FILE_BYTES) return showError(strings.tooLarge);
     showError(null);
     warmUp(); // fetch the OCR engine while the user crops
@@ -192,6 +199,11 @@ export function initDetector(root: HTMLElement) {
       image = await loadImage(objectUrl, strings.unreadable);
     } catch (err) {
       return showError((err as Error).message);
+    }
+    if (image.naturalWidth * image.naturalHeight > 40_000_000) {
+      image = null;
+      URL.revokeObjectURL(objectUrl);
+      return showError(strings.tooLarge);
     }
     cropImg.src = objectUrl;
     setCrop(null);
@@ -275,6 +287,18 @@ export function initDetector(root: HTMLElement) {
   };
   cropArea.addEventListener('pointerup', endDrag);
   cropArea.addEventListener('pointercancel', endDrag);
+  cropArea.addEventListener('keydown', (e) => {
+    if (!image || !['Enter', 'Escape', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) return;
+    e.preventDefault();
+    if (e.key === 'Escape') return setCrop(null);
+    const w = image.naturalWidth, h = image.naturalHeight;
+    const next = { ...(crop ?? { x: w / 4, y: h / 4, w: w / 2, h: h / 2 }) };
+    const dx = e.key === 'ArrowLeft' ? -w / 50 : e.key === 'ArrowRight' ? w / 50 : 0;
+    const dy = e.key === 'ArrowUp' ? -h / 50 : e.key === 'ArrowDown' ? h / 50 : 0;
+    if (e.shiftKey) { next.w = Math.max(1, Math.min(w - next.x, next.w + dx)); next.h = Math.max(1, Math.min(h - next.y, next.h + dy)); }
+    else { next.x = Math.max(0, Math.min(w - next.w, next.x + dx)); next.y = Math.max(0, Math.min(h - next.h, next.y + dy)); }
+    setCrop(next);
+  });
   clearCropBtn.addEventListener('click', () => setCrop(null));
   window.addEventListener('resize', () => setCrop(crop));
 
@@ -332,6 +356,15 @@ export function initDetector(root: HTMLElement) {
     root.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
+  filterGroup.addEventListener('keydown', (e) => {
+    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return;
+    const buttons = $$<HTMLButtonElement>('[data-filter]');
+    const index = buttons.indexOf(document.activeElement as HTMLButtonElement);
+    if (index < 0) return;
+    e.preventDefault();
+    const next = e.key === 'Home' ? 0 : e.key === 'End' ? buttons.length - 1 : (index + (e.key === 'ArrowRight' ? 1 : -1) + buttons.length) % buttons.length;
+    buttons[next].click(); buttons[next].focus();
+  });
   function renderFilters() {
     if (!current) return;
     const counts = new Map<string, number>();
@@ -347,7 +380,7 @@ export function initDetector(root: HTMLElement) {
         btn.className = FILTER_CLASS;
         btn.append(`${label} `);
         const c = document.createElement('span');
-        c.className = 'tabular-nums opacity-60';
+        c.className = 'tabular-nums';
         c.textContent = String(count);
         btn.appendChild(c);
         btn.addEventListener('click', () => {
@@ -363,7 +396,10 @@ export function initDetector(root: HTMLElement) {
 
   function renderList() {
     if (!current) return;
-    for (const btn of $$('[data-filter]')) btn.setAttribute('aria-checked', String(btn.dataset.filter === filter));
+    for (const btn of $$('[data-filter]')) {
+      btn.setAttribute('aria-checked', String(btn.dataset.filter === filter));
+      btn.tabIndex = btn.dataset.filter === filter ? 0 : -1;
+    }
     const items = current.results.filter((r) => filter === 'all' || r.category === filter);
     resultsList.replaceChildren(...items.map((r) => renderCard(r, current!.results.indexOf(r) + 1)));
   }
@@ -379,7 +415,7 @@ export function initDetector(root: HTMLElement) {
 
     const preview = q('[data-preview]');
     preview.textContent = previewText;
-    previewFont(preview, r.previewUrl);
+    if (safeFontUrl(r.previewUrl)) previewFont(preview, r.previewUrl);
 
     q('[data-license]').textContent = licenseText(r.license);
 
@@ -394,7 +430,7 @@ export function initDetector(root: HTMLElement) {
       }
     }
 
-    q<HTMLAnchorElement>('[data-link]').href = r.url;
+    q<HTMLAnchorElement>('[data-link]').href = safeSpecimenUrl(r.url) ? r.url : 'https://fonts.google.com/';
     const copy = q<HTMLButtonElement>('[data-copy]');
     copy.addEventListener('click', () => copyText(r.name, copy));
     return li;
@@ -455,6 +491,18 @@ export function initDetector(root: HTMLElement) {
     renderHistory();
   });
 
+  const saveHistory = $<HTMLInputElement>('[data-save-history]');
+  try {
+    saveHistory.checked = localStorage.getItem(HISTORY_CONSENT) === 'yes';
+    if (!saveHistory.checked) localStorage.removeItem(HISTORY_KEY);
+  } catch {}
+  saveHistory.addEventListener('change', () => {
+    try {
+      if (saveHistory.checked) localStorage.setItem(HISTORY_CONSENT, 'yes');
+      else { localStorage.removeItem(HISTORY_CONSENT); localStorage.removeItem(HISTORY_KEY); }
+    } catch {}
+    renderHistory();
+  });
   renderHistory();
   show('upload');
 }

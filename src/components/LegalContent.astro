@@ -1,0 +1,40 @@
+---
+interface Props { kind: string }
+const { kind } = Astro.props;
+---
+<div lang="en">
+<p>Updated October 29, 2026. Service: Font Finder Tool at fontfindertool.com. Contact: <a href="mailto:hello@fontfindertool.com">hello@fontfindertool.com</a>.</p>
+{kind === 'privacy' && <>
+<h2>Information and purposes</h2>
+<p>Font recognition runs in your browser. The image you select is not sent to our server by the scanning tool. Avoid using sensitive or confidential images on shared devices.</p>
+<p>Cloudflare delivers and protects this website and may process IP addresses, requested URLs, timestamps and browser information for delivery and security. We have removed Google Analytics from the application. The application contains no advertising trackers, third-party video embeds, accounts or payment collection.</p>
+<h2>External downloads</h2>
+<p>When you select an image, your browser downloads Tesseract OCR software and English language data from jsDelivr. Result previews download Fontsource fonts from jsDelivr. These providers receive technical request information such as IP address, but the scanning tool does not send them your image. Their infrastructure may process information outside your country. External links, including Google Fonts, have their own privacy policies.</p>
+<h2>Storage and choices</h2>
+<p>Theme preferences are saved locally when you choose a theme. Scan history is off by default. If you enable it, up to six thumbnails and result sets are saved on this device. Entries older than 30 days are excluded when history is read; browser storage can remain until you clear it. Use Clear or turn off the save option to delete saved scans. OCR persistent language caching is disabled; ordinary browser HTTP caching can still occur. See our <a href="/cookies">cookie policy</a>.</p>
+<h2>Contact messages</h2>
+<p>If you email us, your email provider and ours process your address, message and any attachments. We use messages to respond and handle support, privacy and legal requests. Do not send sensitive information or images unless necessary. This site has no contact or marketing subscription form.</p>
+<h2>Your rights</h2>
+<p>Depending on applicable law, you may request access, correction, deletion, restriction or portability of personal information, object to processing or withdraw consent. Email the address above. You may complain to your local privacy regulator. We may need proportionate identity verification. Security records and correspondence may need to be retained for security, legal obligations or resolving requests; exact provider retention and processing locations depend on the operator's hosting and email configuration.</p>
+<h2>Children and changes</h2>
+<p>This is a general design tool, not a service directed to children. Contact us about any personal information sent by a child. We will update this notice when processing changes.</p>
+</>}
+{kind === 'terms' && <>
+<h2>The service</h2><p>Font Finder Tool is a free tool suggesting Google Fonts that resemble lettering in an image. Automated matches can be incorrect and are not a guarantee of identifying a typeface. Availability and results are provided as available, subject to rights and warranties that cannot legally be excluded.</p>
+<h2>Permitted use</h2><p>Use only images you have permission to process. Do not attempt unauthorized access, distribute malicious content or overload the service. You retain your rights in your images; local processing does not transfer ownership to us.</p>
+<h2>Licenses and third parties</h2><p>Font names and trademarks belong to their owners. Similarity suggestions imply no affiliation. Check the original font license before commercial use, embedding or redistribution. License summaries are informational. Third-party fonts, software and images remain subject to their own licenses. Our original site content is protected by applicable copyright law, subject to permitted uses and any separately granted license.</p>
+<h2>Payments and responsibility</h2><p>We currently accept no payments or subscriptions. See the <a href="/refunds">refund policy</a>. Verify matches and licenses before relying on results. To the extent permitted by applicable law, we are not responsible for indirect losses from use of the tool. Nothing in these terms excludes mandatory consumer rights or liability that cannot legally be excluded.</p>
+<h2>Changes and contact</h2><p>Material changes will be reflected here with an updated date. Contact the address above with questions, accessibility issues or copyright concerns; identify the affected page and your rights in the work.</p>
+</>}
+{kind === 'cookies' && <>
+<h2>Cookies and similar storage</h2><p>The application sets no analytics or advertising cookies and does not load Google Analytics. Cloudflare may use security cookies depending on the protections enabled by the operator.</p>
+<h2>Local storage</h2><ul><li><code>fft:theme</code>: stores a theme you select until you reset it or clear browser storage.</li><li><code>fft:history-enabled</code>: records your explicit choice to save recent scans.</li><li><code>fft:history:v3</code>: optional thumbnails and results, up to six entries, with a 30-day display limit. Turn off saving or use Clear to delete them.</li></ul>
+<p>History is disabled unless you select the save checkbox. You can use scanning without saving history. Your browser may cache downloaded assets to operate the tool. Blocking local storage does not prevent scanning.</p>
+<h2>Consent</h2><p>We have removed optional analytics instead of collecting tracking consent. The optional history checkbox controls scan storage and can be withdrawn at any time. A future analytics, advertising or embedded service must be assessed and, where required, blocked until valid consent is given. Browser settings can delete storage and cookies.</p>
+</>}
+{kind === 'refunds' && <>
+<h2>No charges</h2><p>Font Finder Tool currently provides this tool free of charge. We do not take payments, sell subscriptions or charge for font downloads, so there are no purchases from us to refund or subscriptions to cancel.</p>
+<h2>Third-party purchases</h2><p>If you purchase anything from an external website, contact that seller. Their terms and applicable consumer law govern that transaction. Nothing here limits mandatory consumer rights.</p>
+<h2>Unexpected charges</h2><p>If you believe a charge was made by Font Finder Tool, contact the address above with the date and merchant description. Do not send full payment card details. Any future paid service must disclose pricing, cancellation and refund terms before purchase.</p>
+</>}
+</div>

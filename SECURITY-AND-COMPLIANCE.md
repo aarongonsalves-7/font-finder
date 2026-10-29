@@ -1,0 +1,44 @@
+# Repository security and compliance review ? October 29, 2026
+
+## Scope and results
+Source, routing, browser storage, external resources, configuration, dependencies, public filenames and reachable Git history were reviewed. This is a repository audit, not a penetration test, legal opinion, accessibility certification or guarantee against compromise. Changes have not been deployed.
+
+- Privacy and terms existed. Replaced their rendered content with a shared current English notice on all language routes (marked lang=en), avoiding inconsistent translated legal promises. Added /cookies and /refunds, linked globally.
+- Removed immediately loaded Google Analytics (G-RBLJC9C0N5). A measurement ID is public configuration, not a secret. No reviews/testimonials were found. Removed an unsupported competitor comparison. Softened selected English accuracy/confidentiality claims; other marketing translations still need editorial review.
+- No login, admin panel, database, password storage, server API, payment processor or server-side contact form exists. Authentication, password hashing and per-user database authorization are consequently not applicable. Do not add them merely to protect a public browser tool. Any future such feature requires a separate design and audit.
+- Added read-only method handling, denial of sensitive path patterns, CSP, framing prevention, MIME protection, referrer and permissions policies, and HTTPS HSTS. Static assets receive baseline headers through _headers. Only public/ and built assets should be served; never publish the repository root.
+- CSP still permits inline scripts and styles to support the existing theme and previews and permits jsDelivr scripts and WebAssembly for OCR. It is defense in depth, not complete XSS prevention. Future improvement: nonce/hash inline scripts and self-host pinned OCR/font assets. Public build assets should be checked after deployment.
+- User preview/OCR text uses textContent; JSON-LD now escapes <. Stored result links/font URLs are restricted to expected providers. File MIME types are allowlisted, a 15 MB limit remains and decoded images over 40 million pixels are rejected. Decoding itself can allocate memory before this check.
+- Optional scan history now requires an unchecked opt-in. Turning it off deletes saved scans. Six results maximum, 30-day read filter. Browser storage may persist until cleared. OCR language caching disabled. Theme is saved only when selected. Legacy tracking cookies from previous visits are not actively deleted; users can clear site data.
+- Added keyboard crop selection/movement/resizing, arrow-key radio filters, reduced-motion rules, and stronger muted/link text contrast. Existing image previews have alternative text; recent-history thumbnails are decorative alongside named buttons. Existing skip link, status region and labelled fields remain. Manual screen-reader, touch-only crop alternative, zoom and full automated WCAG testing remain open; no compliance certification is claimed.
+- Added Cloudflare PAGE_RATE_LIMITER at 300 page-render requests per 60 seconds per connecting IP/location, returning 429 and Retry-After. Anonymous users have no account identity, so this generous IP threshold may still affect shared networks. Static assets bypass middleware; configure edge WAF protection separately. Cloudflare limits are approximate and local to a location, not a global DDoS guarantee. Verify namespace 726401 is unused by another Worker in your account.
+- Expanded ignores for .env variants, .dev.vars and private key files. No application env references or root env files were found. Never put secrets in PUBLIC_ variables or browser code. Store future credentials using Cloudflare Worker secrets with least privilege.
+- Pattern scan of 21 reachable Git commits and 266 unique blobs found no matching AWS, GitHub, Google API, Stripe secret, private-key or long assigned-secret patterns. This cannot detect every secret, unreachable/deleted remote history, provider secrets or compromised credentials. Rotate any independently suspected key; rewriting history does not revoke it.
+- npm update applied compatible releases and reported zero known vulnerabilities (previously four moderate and one high). Windows warned about cleanup of loaded old native modules; no source files were deleted. Repeat audit in CI and after future updates. There is no configured production debug flag; Wrangler logs are local tooling output, not a public debug endpoint.
+
+## Required operator follow-up
+
+1. Supply actual legal operator name, country/province, public business address and confirmed working privacy/support email. Existing hello@fontfindertool.com is retained from the site and is not independently verified. Business location cannot be inferred from a computer timezone. Policies are provisional until identity, purposes, lawful bases and retention practices are verified.
+2. Verify Cloudflare DNS/TLS, MFA on registrar/GitHub/Cloudflare/email, least-privilege tokens, WAF/rate rules, backups and recovery, deployment access, host analytics/Zaraz/Apps, injected trackers, security-cookie settings and log retention. The repository cannot establish dashboard settings. Do not log uploaded content or contact messages unnecessarily. Document an incident response and privacy breach process.
+3. Confirm hosting/CDN/email processing agreements, locations, transfer safeguards and retention/deletion schedules, then add precise disclosures. The current notice describes technical behavior and does not invent provider retention periods.
+4. Confirm ownership/licenses for public/og.png, icon PNGs, favicon SVG and any future imagery; the repository has no provenance records establishing ownership. Keep source artwork, creator permissions and font license notices. Google Fonts availability alone does not establish rights to trademarks or imagery.
+5. Review all language versions of marketing content for unsupported accuracy, catalog-size, confidentiality, availability and license claims. New legal and consent text is English and explicitly marked; commission accurate translations where required.
+6. Test the deployed pages, headers (including error responses), cookies and network requests with a fresh browser, keyboard, screen reader and mobile device. Verify scanning still works with CSP and that no dashboard-injected analytics run. Existing users may have old analytics cookies. Confirm optional history rejection, acceptance and withdrawal, plus 429 behavior and any shared-IP effects.
+
+## Legal applicability ? conditional, jurisdiction unconfirmed
+
+Canadian commercial activity can trigger PIPEDA, with accountability, meaningful consent, limited collection, safeguards, access and retention requirements. Provincial privacy rules may apply instead or additionally. If based in Nova Scotia and introducing paid online contracts, assess required seller identity/address, pricing, cancellation and contract disclosures. The current tool takes no payments; a refund notice accurately says so and preserves statutory rights.
+
+EU/UK targeting or monitoring may trigger GDPR/UK GDPR and storage-access rules. Optional history requires opt-in here; analytics has been removed, so a tracking banner is not presently implemented. A blanket statement that no banner is legally required cannot be made until actual deployed technologies and audience are verified. Do not load future nonessential trackers before any required consent. US state privacy, children's privacy, accessibility, consumer protection, copyright and marketing laws depend on location, audience, thresholds and future features. No marketing form exists; future marketing permission must be separate and optional, with withdrawal/unsubscribe controls.
+
+Sources consulted:
+- https://www.priv.gc.ca/en/privacy-topics/privacy-laws-in-canada/the-personal-information-protection-and-electronic-documents-act-pipeda/pipeda_brief/
+- https://www.priv.gc.ca/en/privacy-topics/privacy-for-businesses/appropriate-handling-of-personal-information/collecting-personal-information-and-consent/consent/gl_omc_201805/
+- https://ico.org.uk/for-organisations/advice-for-small-organisations/privacy-notices-and-cookies/cookies-and-privacy-notices-in-detail/
+- https://novascotia.ca/just/Regulations/regs/cpintrnt.htm
+- https://www.w3.org/TR/WCAG22/
+- https://developers.cloudflare.com/workers/runtime-apis/bindings/rate-limit/
+
+## Validation
+
+Production build passed after dependency update and rate-limit implementation. Astro check passed with zero errors, warnings or hints across 56 files. npm update reported zero known vulnerabilities. Local background development server failed its 30-second startup deadline; browser behavior, runtime headers and rate-limit enforcement are not verified. Final minor footer-link/contrast changes still require browser review. No live deployment or external intrusion testing was performed.

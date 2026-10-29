@@ -12,6 +12,8 @@ const [cropBefore, cropStrong, cropAfter] = splitMarked(t('detector.cropHint'));
 
 <div id="detector" data-detector data-strings={strings} class="scroll-mt-24">
   <div class="card overflow-hidden text-left shadow-floating">
+    <p lang="en" class="px-4 pt-4 text-sm text-body">Images are processed on your device. Scanning downloads OCR software and preview fonts from jsDelivr, which receives your IP address. Only choose images you have permission to use. <a href="/privacy" class="underline">Privacy policy</a></p>
+    <label lang="en" class="flex items-center gap-2 px-4 py-3 text-sm text-body"><input type="checkbox" data-save-history /> Save thumbnails and results on this device (optional)</label>
     <!-- 1. Upload -->
     <div data-view="upload" class="p-3 sm:p-4">
       <label
@@ -44,7 +46,7 @@ const [cropBefore, cropStrong, cropAfter] = splitMarked(t('detector.cropHint'));
         <button type="button" data-clear-crop class="btn-square btn-ghost invisible h-8 text-xs">{t('detector.useWhole')}</button>
       </div>
       <div class="bg-[repeating-conic-gradient(var(--color-hairline-soft)_0_25%,var(--color-elevated)_0_50%)] bg-size-[16px_16px] p-4 sm:p-6">
-        <div data-crop-area class="relative mx-auto w-fit max-w-full overflow-hidden cursor-crosshair touch-none select-none">
+        <div data-crop-area tabindex="0" role="group" aria-label="Image crop. Press Enter to select a central crop, arrow keys to move it, Shift and arrow keys to resize it, Escape to use the whole image." class="relative mx-auto w-fit max-w-full overflow-hidden cursor-crosshair touch-none select-none">
           <img data-crop-img alt={t('detector.uploadedAlt')} class="block max-h-[60vh] max-w-full sm:max-h-[420px]" draggable="false" />
           <div data-crop-box class="pointer-events-none absolute border-2 border-link bg-link/10 shadow-[0_0_0_9999px_rgb(0_0_0/0.35)]" hidden></div>
         </div>

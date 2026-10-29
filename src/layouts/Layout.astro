@@ -74,9 +74,9 @@ const ogImage = new URL('/og.png', Astro.site);
 
     <Font cssVariable="--font-geist" preload />
     <Font cssVariable="--font-geist-mono" />
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
 
-    {schema.map((s) => <script type="application/ld+json" set:html={JSON.stringify(s)} />)}
+
+    {schema.map((s) => <script type="application/ld+json" set:html={JSON.stringify(s).replace(/</g, '\u003c')} />)}
   </head>
   <body class="flex min-h-dvh flex-col font-sans">
     <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 btn-square btn-primary">

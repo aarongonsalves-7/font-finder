@@ -11,8 +11,8 @@ export const isProseSlug = (slug: string | undefined): slug is ProseSlug => !!sl
 
 /** "Last updated" dates (ISO) for the legal pages. */
 export const proseUpdated: Partial<Record<ProseSlug, string>> = {
-  privacy: '2026-10-12',
-  terms: '2026-10-12'
+  privacy: '2026-10-29',
+  terms: '2026-10-29'
 };
 
 /** Every indexable page as a language-neutral path. */

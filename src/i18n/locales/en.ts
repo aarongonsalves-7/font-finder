@@ -162,7 +162,7 @@ const en = {
   home: {
     title: 'Font Finder | Free AI Font Finder by Image | Font Finder Tool',
     description:
-      'Free font finder: upload an image to identify any font in seconds. AI font finder matching 1,900+ free Google Fonts, previewed in your text. No sign up.',
+      'Free font finder: upload an image to find similar Google Fonts. AI font finder matching 1,900+ free Google Fonts, previewed in your text. No sign up.',
     eyebrow: 'Free AI font finder',
     h1: 'Font Finder: Spotted a font you love? Find it in seconds.',
     intro:
@@ -273,7 +273,7 @@ const en = {
   <li><strong>Identify the font.</strong> The tool reads each character, measures its shape and compares it with every family in its font index.</li>
   <li><strong>Compare and download.</strong> Review the ranked matches, type your own words into the preview box and open the winner on Google Fonts to download it or copy the embed code.</li>
 </ul>
-<p>Because the <strong>font finder upload image</strong> step happens entirely in your browser, the picture never leaves your device. That makes it safe to check fonts in unreleased designs, client mockups and internal documents.</p>
+<p>Because the <strong>font finder upload image</strong> step happens entirely in your browser, the picture never leaves your device. Avoid confidential images, particularly on shared devices.</p>
 
 <h2>An AI font finder that runs on your device</h2>
 <p>Behind the scenes, Font Finder Tool works as an <strong>AI font finder</strong> in two stages. First, a neural network text recognition engine reads the characters in your crop, so the tool knows that a particular shape is a “g” rather than a “q”. Second, each recognised letter is measured (stroke weight, x height, width, contrast and the details that make one typeface different from another) and compared against a prebuilt index of glyphs from more than 1,900 Google Fonts families. The closest overall matches rise to the top of the list.</p>
@@ -526,7 +526,7 @@ const en = {
 <p>So we built a finder that only returns fonts you can actually use. Every result is a free, open source Google Font, previewed in your own text, with its license and a direct download link. When your image uses a commercial font, you get the closest free alternatives, and cards note which paid fonts they resemble.</p>
 
 <h2>How matching works</h2>
-<p>Everything runs in your browser. The tool reads the letters in your crop, then each letter’s shape and proportions are compared with a prebuilt index of every font on <a href="https://fonts.google.com" rel="noopener">Google Fonts</a> (served via <a href="https://fontsource.org" rel="noopener">Fontsource</a>). Your image is never uploaded.</p>
+<p>Everything runs in your browser. The tool reads the letters in your crop, then each letter’s shape and proportions are compared with a prebuilt index of fonts from <a href="https://fonts.google.com" rel="noopener">Google Fonts</a> (served via <a href="https://fontsource.org" rel="noopener">Fontsource</a>). Your image is never uploaded.</p>
 
 <h2>Get in touch</h2>
 <p>Found a wrong match, or want a feature? Email <a href="mailto:hello@fontfindertool.com">hello@fontfindertool.com</a> or visit our <a href="/contact">Contact</a> page.</p>`

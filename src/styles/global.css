@@ -12,15 +12,15 @@
 @theme {
   --color-ink: #171717;
   --color-body: #4d4d4d;
-  --color-mute: #8f8f8f;
-  --color-faint: #a1a1a1;
+  --color-mute: #666666;
+  --color-faint: #707070;
   --color-hairline: #ebebeb;
   --color-hairline-soft: #f2f2f2;
   --color-canvas: #fafafa;
   --color-elevated: #ffffff;
   /* Text on ink-filled surfaces (primary buttons, active pills). */
   --color-on-ink: #ffffff;
-  --color-link: #0070f3;
+  --color-link: #0065db;
   --color-link-deep: #0761d1;
   --color-link-soft: #d3e5ff;
   --color-error: #ee0000;
@@ -74,7 +74,7 @@
     --color-on-ink: #0a0a0a;
     --color-body: #a1a1a1;
     --color-mute: #878787;
-    --color-faint: #6e6e6e;
+    --color-faint: #888888;
     --color-hairline: #2e2e2e;
     --color-hairline-soft: #1c1c1c;
     --color-canvas: #0a0a0a;
@@ -174,4 +174,8 @@
     & a { @apply text-link underline-offset-2 hover:underline; }
     & strong { @apply font-medium text-ink; }
   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
 }

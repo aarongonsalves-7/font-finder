@@ -1,5 +1,6 @@
 ---
 // A landing or prose page by slug. Routes validate the slug before rendering this.
+import LegalContent from '../LegalContent.astro';
 import Layout from '../../layouts/Layout.astro';
 import ProseLayout from '../../layouts/ProseLayout.astro';
 import PageHero from '../PageHero.astro';
@@ -55,6 +56,6 @@ const prose = isLandingSlug(slug) ? undefined : content.pages[slug];
     path={path}
     updated={proseUpdated[slug as ProseSlug]}
   >
-    <Fragment set:html={localizeHtml(prose.html, lang)} />
+    {['privacy', 'terms'].includes(slug) ? <LegalContent kind={slug} /> : <Fragment set:html={localizeHtml(prose.html, lang)} />}
   </ProseLayout>
 )}

@@ -18,7 +18,7 @@ let metaPromise: Promise<IndexMeta> | null = null;
 const recordCache = new Map<string, Promise<Uint8Array>>();
 
 function getWorker(): Promise<Worker> {
-  workerPromise ??= import('tesseract.js').then(({ createWorker }) => createWorker('eng'));
+  workerPromise ??= import('tesseract.js').then(({ createWorker }) => createWorker('eng', 1, { cacheMethod: 'none' }));
   workerPromise.catch(() => (workerPromise = null));
   return workerPromise;
 }

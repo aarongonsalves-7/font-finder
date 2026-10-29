@@ -3,5 +3,6 @@
 	// Server-rendered Astro site on Cloudflare Workers. The @astrojs/cloudflare adapter
 	// fills in the Worker entrypoint and the static assets binding at build time.
 	"name": "fontfindertool",
-	"compatibility_date": "2026-10-06"
+	"compatibility_date": "2026-10-06",
+    "ratelimits": [{ "name": "PAGE_RATE_LIMITER", "namespace_id": "726401", "simple": { "limit": 300, "period": 60 } }]
 }
