@@ -16,4 +16,4 @@ export const proseUpdated: Partial<Record<ProseSlug, string>> = {
 };
 
 /** Every indexable page as a language-neutral path. */
-export const pagePaths = ['/', ...proseSlugs.map((s) => `/${s}`), ...landingSlugs.map((s) => `/${s}`)];
+export const pagePaths = ['/', ...proseSlugs.map((s) => `/${s}`), ...landingSlugs.map((s) => `/${s}`), '/cookies', '/refunds'];

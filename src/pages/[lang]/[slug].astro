@@ -1,15 +1,16 @@
 ---
 import SlugView from '../../components/views/SlugView.astro';
+import PolicyView from '../../components/views/PolicyView.astro';
 import { defaultLang } from '../../i18n/ui';
 import { isLang } from '../../i18n/utils';
 import { isLandingSlug, isProseSlug } from '../../i18n/routes';
 
 // Translated pages ("/es/about"). English lives at the root, so "/en/about" redirects there.
 const { lang, slug } = Astro.params;
-if (!isLang(lang) || (!isLandingSlug(slug) && !isProseSlug(slug))) {
+if (!isLang(lang) || (!isLandingSlug(slug) && !isProseSlug(slug) && slug !== 'cookies' && slug !== 'refunds')) {
   return new Response(null, { status: 404 });
 }
 if (lang === defaultLang) return Astro.redirect(`/${slug}`, 301);
 ---
 
-<SlugView slug={slug} />
+{slug === 'cookies' || slug === 'refunds' ? <PolicyView kind={slug} /> : <SlugView slug={slug as never} />}

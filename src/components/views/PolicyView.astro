@@ -1,0 +1,13 @@
+---
+import ProseLayout from '../../layouts/ProseLayout.astro';
+import { policies } from '../../i18n/policies';
+import { getLangFromUrl, localizeHtml } from '../../i18n/utils';
+
+interface Props { kind: 'cookies' | 'refunds' }
+const { kind } = Astro.props;
+const lang = getLangFromUrl(Astro.url);
+const page = policies[lang][kind];
+---
+<ProseLayout title={`${page.heading} | Font Finder Tool`} description={page.description} heading={page.heading} path={`/${kind}`} updated="2026-10-29">
+  <Fragment set:html={localizeHtml(page.html, lang)} />
+</ProseLayout>

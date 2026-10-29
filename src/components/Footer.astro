@@ -4,6 +4,7 @@ import ThemePicker from './ThemePicker.astro';
 import { footerNav } from '../data/nav';
 import { languages } from '../i18n/ui';
 import { getLangFromUrl, langs, stripLang, useTranslatedPath, useTranslations } from '../i18n/utils';
+import { policies } from '../i18n/policies';
 
 const lang = getLangFromUrl(Astro.url);
 const t = useTranslations(lang);
@@ -35,13 +36,13 @@ const year = new Date().getFullYear();
     ))}
   </div>
 
-  <nav lang="en" aria-label="Additional policies" class="container-page flex flex-wrap gap-4 py-4 text-sm"><a href="/cookies" class="underline">Cookie policy</a><a href="/refunds" class="underline">Refund policy</a></nav>
+  <nav aria-label={t('footer.legal')} class="container-page flex flex-wrap gap-4 py-4 text-sm"><a href={translatePath('/cookies')} class="underline">{policies[lang].cookies.heading}</a><a href={translatePath('/refunds')} class="underline">{policies[lang].refunds.heading}</a></nav>
   <nav aria-label={t('lang.label')} class="border-t border-hairline">
     <ul class="container-page flex flex-wrap gap-x-4 gap-y-2 py-5 text-xs">
       {langs.map((l) => (
         <li>
           <a
-            href={translatePath(['/cookies', '/refunds'].includes(path) ? '/' : path, l)}
+            href={translatePath(path, l)}
             hreflang={l}
             lang={l}
             aria-current={l === lang ? 'true' : undefined}
