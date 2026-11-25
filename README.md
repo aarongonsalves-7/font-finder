@@ -1,5 +1,13 @@
 # Font Finder Tool — fontfindertool.com
 
+## What is this project?
+
+Font Finder Tool is a free tool that identifies a font from an image and finds the closest free matches. Upload or paste an image, crop the text, and it tells you which Google Font it most resembles — so you can use a free font instead of paying for the original.
+
+It reads the letters with OCR, turns each letter into a shape fingerprint, and scores it against 2,400+ Google Font styles, showing the top 12 matches. You can preview each match in your own text, see its licence, and see which well-known paid font a free match resembles. Images are never uploaded: all matching runs in your browser.
+
+Status: live and deployed at fontfindertool.com.
+
 Identify fonts from an image and get the closest matches from the Google Fonts catalog, previewed in your own text, with license info and notes on which paid fonts each match resembles.
 
 Astro 7 + Tailwind CSS v4. Pages are rendered on demand in a Cloudflare Worker (`@astrojs/cloudflare`, `output: 'server'`). No API keys are needed: font matching runs entirely in the visitor's browser.
